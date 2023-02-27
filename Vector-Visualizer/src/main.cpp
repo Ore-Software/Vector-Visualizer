@@ -49,7 +49,7 @@ void main()
 layout(location=0) out vec4 color;
 void main()
 {
-    color = vec4(1.0f, 0.0f, 1.0f, 1.0f);
+    color = vec4(1.0f, 0.0f, 0.0f, 1.0f);
 };)";
 
     const char* fragmentShaderCstr = fragmentShader.c_str();
@@ -61,17 +61,16 @@ void main()
     unsigned int vb;
     glGenBuffers(1, &vb);
     glBindBuffer(GL_ARRAY_BUFFER, vb);
-    static const float positions[9]
+    static const float positions[6]
     {
        -0.5f, -0.5f, 0.0f,
-        0.0f,  1.0f, 0.0f,
-        1.0f,  0.0f, 0.0f,
+        1.0f,  1.0f, 0.0f,
     };
     glBufferData(GL_ARRAY_BUFFER, sizeof(positions), positions, GL_STATIC_DRAW);
 
     GLint size = 0;
     glGetBufferParameteriv(GL_ARRAY_BUFFER, GL_BUFFER_SIZE, &size);
-    if (sizeof(float) * 9 != size)
+    if (sizeof(float) * 6 != size)
     {
         glDeleteBuffers(1, &vb);
         std::cout << "buffer error" << std::endl;
@@ -137,14 +136,14 @@ void main()
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
     {
-        //glClearColor(0.0f, 1.0f, 0.0f, 1.0f);
+        glClearColor(0.0f, 1.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         
         /* Render here */
         glBindVertexArray(va);
         glBindBuffer(GL_ARRAY_BUFFER, vb);
-        //glDrawArrays(GL_LINES, 0, 2);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        glDrawArrays(GL_LINES, 0, 2);
+        //glDrawArrays(GL_TRIANGLES, 0, 3);
 
         /* Swap front and back buffers */
         glfwSwapBuffers(window);
