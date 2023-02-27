@@ -49,7 +49,7 @@ void main()
 layout(location=0) out vec4 color;
 void main()
 {
-    color = vec4(1.0f, 0.0f, 0.0f, 1.0f);
+    color = vec4(1.0f, 0.0f, 1.0f, 1.0f);
 };)";
 
     const char* fragmentShaderCstr = fragmentShader.c_str();
@@ -137,14 +137,14 @@ void main()
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
     {
+        //glClearColor(0.0f, 1.0f, 0.0f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        
+        /* Render here */
         glBindVertexArray(va);
         glBindBuffer(GL_ARRAY_BUFFER, vb);
         //glDrawArrays(GL_LINES, 0, 2);
         glDrawArrays(GL_TRIANGLES, 0, 3);
-
-        /* Render here */
-        glClearColor(0.0f, 1.0f, 0.0f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         /* Swap front and back buffers */
         glfwSwapBuffers(window);
