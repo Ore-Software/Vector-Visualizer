@@ -133,6 +133,7 @@ void main()
     //bind shader
     glUseProgram(program);
 
+    glLineWidth(20.0f);
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
     {
