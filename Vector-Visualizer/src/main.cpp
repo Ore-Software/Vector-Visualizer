@@ -39,14 +39,16 @@ int main(void)
         return -1;
     }
 
+    glViewport(0, 0, 1280.0f, 720.0f);
+
     std::string vertexShader = R"(#version 460 core
 layout(location=0) in vec3 position;
 
-uniform mat4 u_View;
+uniform mat4 u_MVP;
 
 void main()
 {
-    gl_Position = u_View * vec4(position, 1.0f);
+    gl_Position = u_MVP * vec4(position, 1.0f);
 };)";
     const char* vertexShaderCstr = vertexShader.c_str();
 
@@ -66,22 +68,30 @@ void main()
     unsigned int vb;
     glGenBuffers(1, &vb);
     glBindBuffer(GL_ARRAY_BUFFER, vb);
-    static const float positions[6 * 4]
+    static const float linePositions[]
     {
-       -10.0f, -10.0f, 0.0f, // vector
-        10.0f,  10.0f, 0.0f,
+        0.0f, 0.0f, 0.0f, // vector
+        20.0f,  5.0f, 0.0f,
         -10.0f,  0.0f, 0.0f, // x axis
         10.0f,  0.0f, 0.0f,
         0.0f,  -10.0f, 0.0f, // y axis
         0.0f,  10.0f, 0.0f,
         0.0f,  0.0f, -10.0f, // z axis
-        0.0f,  0.0f, 10.0f,
+        0.0f,  0.0f, 10.0f
     };
-    glBufferData(GL_ARRAY_BUFFER, sizeof(positions), positions, GL_STATIC_DRAW);
+
+    const float trianglePositions[]
+    {
+        -0.5f, 0.0f, 0.0f,
+         0.5f, 0.0f, 0.0f,
+         0.0f, 0.5f, 0.0f
+    };
+
+    glBufferData(GL_ARRAY_BUFFER, sizeof(linePositions), linePositions, GL_STATIC_DRAW);
 
     GLint size = 0;
     glGetBufferParameteriv(GL_ARRAY_BUFFER, GL_BUFFER_SIZE, &size);
-    if (sizeof(float) * 6 * 4 != size)
+    if (sizeof(linePositions) != size)
     {
         glDeleteBuffers(1, &vb);
         std::cout << "buffer error" << std::endl;
@@ -141,26 +151,36 @@ void main()
         std::cout << message << std::endl;
     }
 
-    glm::vec3 cameraPosition = { 1.0f, 1.0f, 1.0f };
+    glm::vec3 cameraPosition = { 20.0f, 20.0f, 20.0f };
 
     glm::vec3 targetPosition = { 0.0f, 0.0f, 0.0f };
 
-    glm::vec3 direction = targetPosition - cameraPosition;
+    glm::vec3 direction = cameraPosition - targetPosition;
     glm::normalize(direction);
 
-    glm::mat4 viewMatrix = glm::lookAt(cameraPosition, targetPosition, { 0.0f, 1.0f, 0.0f });
+    glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
+    glm::vec3 cameraRight = glm::normalize(glm::cross(up, direction));
 
-    /*glm::mat4 projMatrix = glm::perspective(glm::radians(90.0f), 16.0f / 9.0f, 0.1f, 100.0f);
+    glm::vec3 cameraUp = glm::cross(direction, cameraRight);
 
-    glm::mat4 viewProj = viewMatrix * projMatrix;*/
+    glm::mat4 modelMatrix = glm::mat4(1.0f);
+
+    glm::mat4 viewMatrix = glm::lookAt(cameraPosition, targetPosition, cameraUp);
+
+    glm::mat4 projMatrix = glm::perspective(glm::radians(45.0f), 1280.0f / 720.0f, 0.1f, 100.0f);
+
+    /*glm::mat4 projMatrix = glm::ortho(0.0f, 1280.0f, 0.0f, 720.0f, -1.0f, 1.0f);*/
+
+    glm::mat4 MVP = projMatrix * viewMatrix * modelMatrix;
 
     //bind shader
     glUseProgram(program);
 
-    glUniformMatrix4fv(glGetUniformLocation(program, "u_View"), 1, GL_FALSE, &viewMatrix[0][0]);
+    glUniformMatrix4fv(glGetUniformLocation(program, "u_MVP"), 1, GL_FALSE, &MVP[0][0]);
 
+    /*glEnable(GL_DEPTH_TEST);*/
+    glLineWidth(5.0f);
 
-    glLineWidth(20.0f);
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
     {
@@ -169,9 +189,8 @@ void main()
         
         /* Render here */
         glBindVertexArray(va);
-        glBindBuffer(GL_ARRAY_BUFFER, vb);
-        glDrawArrays(GL_LINES, 0, 2 * 4); // draw 4 lines
-        //glDrawArrays(GL_TRIANGLES, 0, 3);
+        glDrawArrays(GL_LINES, 0, 2 * 4);
+        /*glDrawArrays(GL_TRIANGLES, 0, 3);*/
 
         /* Swap front and back buffers */
         glfwSwapBuffers(window);
