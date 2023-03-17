@@ -1,5 +1,7 @@
 #include <glad/glad.h>
 #include <glfw/glfw3.h>
+#include "external/glm/glm.hpp"
+#include "external/glm/gtc/matrix_transform.hpp"
 
 #include <iostream>
 #include <string>
@@ -39,9 +41,12 @@ int main(void)
 
     std::string vertexShader = R"(#version 460 core
 layout(location=0) in vec3 position;
+
+uniform mat4 u_View;
+
 void main()
 {
-    gl_Position = vec4(position, 1.0f);
+    gl_Position = u_View * vec4(position, 1.0f);
 };)";
     const char* vertexShaderCstr = vertexShader.c_str();
 
@@ -63,14 +68,14 @@ void main()
     glBindBuffer(GL_ARRAY_BUFFER, vb);
     static const float positions[6 * 4]
     {
-       -0.5f, -0.5f, 0.0f, // vector
-        1.0f,  1.0f, 0.0f,
-        0.0f,  0.0f, 0.0f, // x axis
-        1.0f,  0.0f, 0.0f,
-        0.0f,  0.0f, 0.0f, // y axis
-        0.0f,  1.0f, 0.0f,
-        0.0f,  0.0f, 0.0f, // z axis
-        0.0f,  0.0f, 1.0f,
+       -10.0f, -10.0f, 0.0f, // vector
+        10.0f,  10.0f, 0.0f,
+        -10.0f,  0.0f, 0.0f, // x axis
+        10.0f,  0.0f, 0.0f,
+        0.0f,  -10.0f, 0.0f, // y axis
+        0.0f,  10.0f, 0.0f,
+        0.0f,  0.0f, -10.0f, // z axis
+        0.0f,  0.0f, 10.0f,
     };
     glBufferData(GL_ARRAY_BUFFER, sizeof(positions), positions, GL_STATIC_DRAW);
 
@@ -136,8 +141,24 @@ void main()
         std::cout << message << std::endl;
     }
 
+    glm::vec3 cameraPosition = { 1.0f, 1.0f, 1.0f };
+
+    glm::vec3 targetPosition = { 0.0f, 0.0f, 0.0f };
+
+    glm::vec3 direction = targetPosition - cameraPosition;
+    glm::normalize(direction);
+
+    glm::mat4 viewMatrix = glm::lookAt(cameraPosition, targetPosition, { 0.0f, 1.0f, 0.0f });
+
+    /*glm::mat4 projMatrix = glm::perspective(glm::radians(90.0f), 16.0f / 9.0f, 0.1f, 100.0f);
+
+    glm::mat4 viewProj = viewMatrix * projMatrix;*/
+
     //bind shader
     glUseProgram(program);
+
+    glUniformMatrix4fv(glGetUniformLocation(program, "u_View"), 1, GL_FALSE, &viewMatrix[0][0]);
+
 
     glLineWidth(20.0f);
     /* Loop until the user closes the window */
