@@ -104,10 +104,6 @@ ipch/
 # Click-Once directory
 publish/
 
-# vcx project files
-*.vcxproj
-*.vcxproj.filters
-
 # NuGet Packages
 *.nupkg
 # NuGet Symbol Packages
