@@ -146,6 +146,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Dependencies\GLAD\include\glad\glad.h" />
+    <ClInclude Include="Dependencies\GLAD\include\KHR\khrplatform.h" />
     <ClInclude Include="Dependencies\GLFW\include\glfw\glfw3.h" />
     <ClInclude Include="Dependencies\GLFW\include\glfw\glfw3native.h" />
     <ClInclude Include="src\external\glm\common.hpp" />

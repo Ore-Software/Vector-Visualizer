@@ -878,6 +878,9 @@
     <ClInclude Include="src\external\glm\vector_relational.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Dependencies\GLAD\include\KHR\khrplatform.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\external\glm\detail\func_common.inl">
