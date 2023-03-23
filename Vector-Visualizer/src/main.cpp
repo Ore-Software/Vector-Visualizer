@@ -1,45 +1,15 @@
-#include <glad/glad.h>
-#include <glfw/glfw3.h>
 #include "external/glm/glm.hpp"
 #include "external/glm/gtc/matrix_transform.hpp"
 
 #include <iostream>
 #include <string>
 
+#include "Window.h"
+#include "renderer/VertexBuffer.h"
+
 int main(void)
 {
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4); // We want OpenGL 4.6
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // We don't want the old OpenGL
-
-    GLFWwindow* window;
-
-    /* Initialize the library */
-    if (!glfwInit())
-        return -1;
-
-    // show version
-    //std::cout << glGetString(GL_VERSION) << "\n";
-
-    /* Create a windowed mode window and its OpenGL context */
-    window = glfwCreateWindow(1280, 720, "Vector Visualizer", NULL, NULL);
-    if (!window)
-    {
-        glfwTerminate();
-        return -1;
-    }
-
-    /* Make the window's context current */
-    glfwMakeContextCurrent(window);
-
-    // Load all OpenGL functions using the glfw loader function
-    // If you use SDL you can use: https://wiki.libsdl.org/SDL_GL_GetProcAddress
-    if (!gladLoadGL()) {
-        std::cout << "Failed to initialize OpenGL context" << std::endl;
-        return -1;
-    }
-
-    glViewport(0, 0, 1280.0f, 720.0f);
+    Window window(1280, 720, "Vector Visualizer", NULL);
 
     std::string vertexShader = R"(#version 460 core
 layout(location=0) in vec3 position;
@@ -65,9 +35,6 @@ void main()
     glGenVertexArrays(1, &va);
     glBindVertexArray(va);
 
-    unsigned int vb;
-    glGenBuffers(1, &vb);
-    glBindBuffer(GL_ARRAY_BUFFER, vb);
     static const float linePositions[]
     {
         0.0f, 0.0f, 0.0f, // vector
@@ -87,16 +54,7 @@ void main()
          0.0f, 0.5f, 0.0f
     };
 
-    glBufferData(GL_ARRAY_BUFFER, sizeof(linePositions), linePositions, GL_STATIC_DRAW);
-
-    GLint size = 0;
-    glGetBufferParameteriv(GL_ARRAY_BUFFER, GL_BUFFER_SIZE, &size);
-    if (sizeof(linePositions) != size)
-    {
-        glDeleteBuffers(1, &vb);
-        std::cout << "buffer error" << std::endl;
-        return -1;
-    }
+    VertexBuffer vb(linePositions, sizeof(linePositions));
 
     //bind vertex buffer to vertex array
     glEnableVertexArrayAttrib(va, 0);
@@ -182,7 +140,7 @@ void main()
     glLineWidth(5.0f);
 
     /* Loop until the user closes the window */
-    while (!glfwWindowShouldClose(window))
+    while (!glfwWindowShouldClose(window.GetID()))
     {
         glClearColor(0.0f, 1.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -193,7 +151,7 @@ void main()
         /*glDrawArrays(GL_TRIANGLES, 0, 3);*/
 
         /* Swap front and back buffers */
-        glfwSwapBuffers(window);
+        glfwSwapBuffers(window.GetID());
 
         /* Poll for and process events */
         glfwPollEvents();

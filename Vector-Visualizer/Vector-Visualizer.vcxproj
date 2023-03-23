@@ -143,6 +143,8 @@
   <ItemGroup>
     <ClCompile Include="src\external\glad\glad.c" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\renderer\VertexBuffer.cpp" />
+    <ClCompile Include="src\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Dependencies\GLAD\include\glad\glad.h" />
@@ -431,6 +433,8 @@
     <ClInclude Include="src\external\glm\vec3.hpp" />
     <ClInclude Include="src\external\glm\vec4.hpp" />
     <ClInclude Include="src\external\glm\vector_relational.hpp" />
+    <ClInclude Include="src\renderer\VertexBuffer.h" />
+    <ClInclude Include="src\Window.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\external\glm\detail\func_common.inl" />
