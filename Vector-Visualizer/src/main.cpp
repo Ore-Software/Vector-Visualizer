@@ -62,14 +62,19 @@ int main()
     Shader vectorShader(vertexFilepath, vectorFragmentFilepath);
 
     // camera setup
+    double yaw = -90.0;
+    double pitch = 0.0;
     glm::vec3 cameraPosition = { 5.0f, 5.0f, 5.0f };
-    glm::vec3 cameraFront = { 0.0f, 0.0f, -1.0f };
-
-    glm::vec3 unitcameraFront = glm::normalize(cameraFront);
+    glm::vec3 cameraFront = 
+    { 
+        cos(glm::radians(yaw)) * cos(glm::radians(pitch)),
+        sin(glm::radians(pitch)),
+        sin(glm::radians(yaw)) * cos(glm::radians(pitch))
+    };
 
     glm::vec3 worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
-    glm::vec3 cameraRight = glm::normalize(glm::cross(worldUp, unitcameraFront));
-    glm::vec3 cameraUp = glm::cross(unitcameraFront, cameraRight);
+    glm::vec3 cameraRight = glm::normalize(glm::cross(worldUp, cameraFront));
+    glm::vec3 cameraUp = glm::cross(cameraFront, cameraRight);
 
     glm::mat4 modelMatrix = glm::mat4(1.0f);
     glm::mat4 viewMatrix = glm::lookAt(cameraPosition, cameraPosition + cameraFront, cameraUp);
@@ -102,8 +107,6 @@ int main()
     double lastXpos = 0.0;
     double lastYpos = 0.0;
     double currXpos, currYpos, deltaX, deltaY;
-    double yaw = -90.0;
-    double pitch = 0.0;
     double sens = 15.0;
 
     /* Loop until the user closes the window */
@@ -114,10 +117,12 @@ int main()
         deltaTime = float(currentTime - lastTime);
 
         // camera updates per frame
-        unitcameraFront = glm::normalize(cameraFront);
+        cameraFront.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+        cameraFront.y = sin(glm::radians(pitch));
+        cameraFront.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
 
-        cameraRight = glm::normalize(glm::cross(worldUp, unitcameraFront));
-        cameraUp = glm::cross(unitcameraFront, cameraRight);
+        cameraRight = glm::normalize(glm::cross(worldUp, cameraFront));
+        cameraUp = glm::cross(cameraFront, cameraRight);
 
         viewMatrix = glm::lookAt(cameraPosition, cameraPosition + cameraFront, cameraUp);
 
@@ -159,6 +164,27 @@ int main()
             cameraPosition -= cameraUp * deltaTime * strafeSpeed;
         }
 
+        // pitch up
+        if (glfwGetKey(windowID, GLFW_KEY_UP) == GLFW_PRESS)
+        {
+            pitch += sens * deltaTime;
+        }
+        // yaw left
+        if (glfwGetKey(windowID, GLFW_KEY_LEFT) == GLFW_PRESS)
+        {
+            yaw -= sens * deltaTime;
+        }
+        // pitch down
+        if (glfwGetKey(windowID, GLFW_KEY_DOWN) == GLFW_PRESS)
+        {
+            pitch -= sens * deltaTime;
+        }
+        // yaw right
+        if (glfwGetKey(windowID, GLFW_KEY_RIGHT) == GLFW_PRESS)
+        {
+            yaw += sens * deltaTime;
+        }
+
         // mouse movement
         if (glfwGetMouseButton(windowID, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
         {
@@ -172,12 +198,6 @@ int main()
             
             yaw -= deltaX * sens;
             pitch += deltaY * sens;
-
-            cameraFront.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-            cameraFront.y = sin(glm::radians(pitch));
-            cameraFront.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-
-            glm::normalize(cameraFront);
         }
 
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
