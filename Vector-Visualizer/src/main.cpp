@@ -10,7 +10,10 @@
 
 int main()
 {
-    Window window(1280, 720, "Vector Visualizer", NULL);
+    float screenWidth = 1280.0f;
+    float screenHeight = 720.0f;
+    float aspectRatio = screenWidth / screenHeight;
+    Window window(screenWidth, screenHeight, "Vector Visualizer", NULL);
 
     // axes setup
     static const float axes[]
@@ -58,19 +61,19 @@ int main()
     Shader axesShader(vertexFilepath, axesFragmentFilepath);
     Shader vectorShader(vertexFilepath, vectorFragmentFilepath);
 
-    // camera
-    glm::vec3 cameraPosition = { 20.0f, 20.0f, 20.0f };
-    glm::vec3 direction = { 10.0f, 10.0f, 20.0f };
+    // camera setup
+    glm::vec3 cameraPosition = { 5.0f, 5.0f, 5.0f };
+    glm::vec3 cameraFront = { 0.0f, 0.0f, -1.0f };
 
-    glm::vec3 unitDirection = glm::normalize(direction);
+    glm::vec3 unitcameraFront = glm::normalize(cameraFront);
 
-    glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
-    glm::vec3 cameraRight = glm::normalize(glm::cross(up, unitDirection));
-    glm::vec3 cameraUp = glm::cross(unitDirection, cameraRight);
+    glm::vec3 worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
+    glm::vec3 cameraRight = glm::normalize(glm::cross(worldUp, unitcameraFront));
+    glm::vec3 cameraUp = glm::cross(unitcameraFront, cameraRight);
 
     glm::mat4 modelMatrix = glm::mat4(1.0f);
-    glm::mat4 viewMatrix = glm::lookAt(cameraPosition, cameraPosition - direction, cameraUp);
-    glm::mat4 projMatrix = glm::perspective(glm::radians(45.0f), 1280.0f / 720.0f, 0.1f, 1000.0f);
+    glm::mat4 viewMatrix = glm::lookAt(cameraPosition, cameraPosition + cameraFront, cameraUp);
+    glm::mat4 projMatrix = glm::perspective(glm::radians(45.0f), aspectRatio, 0.1f, 1000.0f);
 
     glm::mat4 MVP = projMatrix * viewMatrix * modelMatrix;
 
@@ -86,14 +89,17 @@ int main()
 
     GLFWwindow* windowID = window.GetID();
 
+    // keyboard movement variables
     double currentTime = 0.0;
     double lastTime = 0.0;
     float deltaTime = 0.0;
     float forwardSpeed = 5.0f;
     float strafeSpeed = 50.0;
 
+    // mouse movement variables
     double lastXpos, lastYpos, currXpos, currYpos, deltaX, deltaY;
     glfwGetCursorPos(windowID, &currXpos, &currYpos);
+    glm::vec3 angleDirection;
     double yaw = 0.0;
     double pitch = 0.0;
     double sens = 1.0/720.0;
@@ -105,18 +111,17 @@ int main()
         currentTime = glfwGetTime();
         deltaTime = float(currentTime - lastTime);
 
-        // camera
-        glm::vec3 unitDirection = glm::normalize(direction);
+        // camera updates per frame
+        unitcameraFront = glm::normalize(cameraFront);
 
-        glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
-        glm::vec3 cameraRight = glm::normalize(glm::cross(up, unitDirection));
-        glm::vec3 cameraUp = glm::cross(unitDirection, cameraRight);
+        cameraRight = glm::normalize(glm::cross(worldUp, unitcameraFront));
+        cameraUp = glm::cross(unitcameraFront, cameraRight);
 
-        glm::mat4 modelMatrix = glm::mat4(1.0f);
-        glm::mat4 viewMatrix = glm::lookAt(cameraPosition, cameraPosition - direction, cameraUp);
-        glm::mat4 projMatrix = glm::perspective(glm::radians(45.0f), 1280.0f / 720.0f, 0.1f, 1000.0f);
+        modelMatrix = glm::mat4(1.0f);
+        viewMatrix = glm::lookAt(cameraPosition, cameraPosition + cameraFront, cameraUp);
+        projMatrix = glm::perspective(glm::radians(45.0f), aspectRatio, 0.1f, 1000.0f);
 
-        glm::mat4 MVP = projMatrix * viewMatrix * modelMatrix;
+        MVP = projMatrix * viewMatrix * modelMatrix;
 
         // upload uniforms
         axesShader.Bind();
@@ -128,22 +133,22 @@ int main()
         // Move forward
         if (glfwGetKey(windowID, GLFW_KEY_W) == GLFW_PRESS) 
         {
-            cameraPosition -= direction * deltaTime * forwardSpeed;
+            cameraPosition += cameraFront * deltaTime * forwardSpeed;
         }
         // Strafe left
         if (glfwGetKey(windowID, GLFW_KEY_A) == GLFW_PRESS) 
         {
-            cameraPosition -= cameraRight * deltaTime * strafeSpeed;
+            cameraPosition += cameraRight * deltaTime * strafeSpeed;
         }
         // Move backward
         if (glfwGetKey(windowID, GLFW_KEY_S) == GLFW_PRESS) 
         {
-            cameraPosition += direction * deltaTime * forwardSpeed;
+            cameraPosition -= cameraFront * deltaTime * forwardSpeed;
         }
         // Strafe right
         if (glfwGetKey(windowID, GLFW_KEY_D) == GLFW_PRESS) 
         {
-            cameraPosition += cameraRight * deltaTime * strafeSpeed;
+            cameraPosition -= cameraRight * deltaTime * strafeSpeed;
         }
 
         //// angles
@@ -194,21 +199,25 @@ int main()
 
         glm::vec3 newUp = glm::cross(right, moveDirection);
 
-        // Move forward
+        // rotate -z
         if (glfwGetKey(windowID, GLFW_KEY_UP) == GLFW_PRESS) {
-            direction += moveDirection * deltaTime * 5.0f;
+            cameraFront -= moveDirection * deltaTime * 5.0f;
+
         }
-        // Move backward
+        // rotate +z
         if (glfwGetKey(windowID, GLFW_KEY_DOWN) == GLFW_PRESS) {
-            direction -= moveDirection * deltaTime * 5.0f;
+            cameraFront += moveDirection * deltaTime * 5.0f;
+
         }
-        // Strafe right
+        // rotate +x
         if (glfwGetKey(windowID, GLFW_KEY_RIGHT) == GLFW_PRESS) {
-            direction += right * deltaTime * 5.0f;
+            cameraFront -= right * deltaTime * 5.0f;
+
         }
-        // Strafe left
+        // rotate -x
         if (glfwGetKey(windowID, GLFW_KEY_LEFT) == GLFW_PRESS) {
-            direction -= right * deltaTime * 5.0f;
+            cameraFront += right * deltaTime * 5.0f;
+
         }
 
         // mouse movement
