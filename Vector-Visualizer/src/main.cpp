@@ -97,12 +97,12 @@ int main()
     float strafeSpeed = 50.0;
 
     // mouse movement variables
-    double lastXpos, lastYpos, currXpos, currYpos, deltaX, deltaY;
-    glfwGetCursorPos(windowID, &currXpos, &currYpos);
-    glm::vec3 angleDirection;
-    double yaw = 0.0;
+    double lastXpos = 0.0;
+    double lastYpos = 0.0;
+    double currXpos, currYpos, deltaX, deltaY;
+    double yaw = -90.0;
     double pitch = 0.0;
-    double sens = 1.0/720.0;
+    double sens = 15.0;
 
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(windowID))
@@ -150,93 +150,37 @@ int main()
         {
             cameraPosition -= cameraRight * deltaTime * strafeSpeed;
         }
-
-        //// angles
-        //if (glfwGetKey(windowID, GLFW_KEY_UP) == GLFW_PRESS)
-        //{
-        //    pitch += 1.0;
-        //    direction.x -= glm::cos(glm::radians(pitch)) * glm::cos(glm::radians(yaw));
-        //    direction.y -= glm::sin(glm::radians(pitch));
-        //    direction.z -= glm::cos(glm::radians(pitch)) * glm::sin(glm::radians(yaw));
-        //}
-        //// Strafe left
-        //if (glfwGetKey(windowID, GLFW_KEY_LEFT) == GLFW_PRESS)
-        //{
-        //    
-        //}
-        //// Move backward
-        //if (glfwGetKey(windowID, GLFW_KEY_DOWN) == GLFW_PRESS)
-        //{
-        //    pitch -= 1.0;
-        //    direction.x += glm::cos(glm::radians(pitch)) * glm::cos(glm::radians(yaw));
-        //    direction.y += glm::sin(glm::radians(pitch));
-        //    direction.z += glm::cos(glm::radians(pitch)) * glm::sin(glm::radians(yaw));
-        //}
-        //// Strafe right
-        //if (glfwGetKey(windowID, GLFW_KEY_RIGHT) == GLFW_PRESS)
-        //{
-        //    
-        //}
-
-        lastXpos = currXpos;
-        lastYpos = currYpos;
-        glfwGetCursorPos(windowID, &currXpos, &currYpos);
-        yaw += sens * deltaTime * float(currXpos - lastXpos);
-        pitch += sens * deltaTime * float(currYpos - lastYpos);
-
-
-        glm::vec3 moveDirection(
-            cos(pitch) * sin(yaw),
-            sin(pitch),      
-            cos(pitch) * cos(yaw)
-        );
-
-        glm::vec3 right = glm::vec3(
-            sin(yaw - 3.14f / 2.0f),
-            0,
-            cos(yaw - 3.14f / 2.0f)
-        );
-
-        glm::vec3 newUp = glm::cross(right, moveDirection);
-
-        // rotate -z
-        if (glfwGetKey(windowID, GLFW_KEY_UP) == GLFW_PRESS) {
-            cameraFront -= moveDirection * deltaTime * 5.0f;
-
+        // fly up
+        if (glfwGetKey(windowID, GLFW_KEY_SPACE) == GLFW_PRESS)
+        {
+            cameraPosition += cameraUp * deltaTime * strafeSpeed;
         }
-        // rotate +z
-        if (glfwGetKey(windowID, GLFW_KEY_DOWN) == GLFW_PRESS) {
-            cameraFront += moveDirection * deltaTime * 5.0f;
-
-        }
-        // rotate +x
-        if (glfwGetKey(windowID, GLFW_KEY_RIGHT) == GLFW_PRESS) {
-            cameraFront -= right * deltaTime * 5.0f;
-
-        }
-        // rotate -x
-        if (glfwGetKey(windowID, GLFW_KEY_LEFT) == GLFW_PRESS) {
-            cameraFront += right * deltaTime * 5.0f;
-
+        // drop down
+        if (glfwGetKey(windowID, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+        {
+            cameraPosition -= cameraUp * deltaTime * strafeSpeed;
         }
 
         // mouse movement
-        //if (glfwGetMouseButton(windowID, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
-        //{
-        //    // consider infinite dragging (unrestricted by window border) by getting/setting position later
-        //    
-        //    deltaX = currXpos - lastXpos;
-        //    deltaY = currYpos - lastYpos;
-        //    
-        //    yaw -= deltaX * sens;
-        //    pitch += deltaY * sens;
+        if (glfwGetMouseButton(windowID, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
+        {
+            // TODO: consider infinite dragging (unrestricted by window border) by getting/setting position later
+            // TODO: fix viewport teleporting later
+            glfwGetCursorPos(windowID, &currXpos, &currYpos);
+            deltaX = (currXpos - lastXpos)/screenWidth;
+            deltaY = (currYpos - lastYpos)/screenHeight;
+            lastXpos = currXpos;
+            lastYpos = currYpos;
+            
+            yaw -= deltaX * sens;
+            pitch += deltaY * sens;
 
-        //    direction.x += glm::cos(yaw);
-        //    direction.z -= glm::sin(yaw);
-        //    direction.y += glm::sin(pitch);
+            cameraFront.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+            cameraFront.y = sin(glm::radians(pitch));
+            cameraFront.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
 
-        //}
-        
+            glm::normalize(cameraFront);
+        }
 
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
