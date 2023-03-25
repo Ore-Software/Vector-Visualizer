@@ -65,8 +65,8 @@ int main()
     double yaw = -90.0;
     double pitch = 0.0;
     glm::vec3 cameraPosition = { 5.0f, 5.0f, 5.0f };
-    glm::vec3 cameraFront = 
-    { 
+    glm::vec3 cameraFront =
+    {
         cos(glm::radians(yaw)) * cos(glm::radians(pitch)),
         sin(glm::radians(pitch)),
         sin(glm::radians(yaw)) * cos(glm::radians(pitch))
@@ -104,8 +104,8 @@ int main()
     float strafeSpeed = 50.0;
 
     // mouse movement variables
-    double lastXpos = 0.0;
-    double lastYpos = 0.0;
+    double centerX = screenWidth / 2;
+    double centerY = screenHeight / 2;
     double currXpos, currYpos, deltaX, deltaY;
     double sens = 15.0;
 
@@ -134,22 +134,22 @@ int main()
 
         // keyboard input
         // Move forward
-        if (glfwGetKey(windowID, GLFW_KEY_W) == GLFW_PRESS) 
+        if (glfwGetKey(windowID, GLFW_KEY_W) == GLFW_PRESS)
         {
             cameraPosition += cameraFront * deltaTime * forwardSpeed;
         }
         // Strafe left
-        if (glfwGetKey(windowID, GLFW_KEY_A) == GLFW_PRESS) 
+        if (glfwGetKey(windowID, GLFW_KEY_A) == GLFW_PRESS)
         {
             cameraPosition += cameraRight * deltaTime * strafeSpeed;
         }
         // Move backward
-        if (glfwGetKey(windowID, GLFW_KEY_S) == GLFW_PRESS) 
+        if (glfwGetKey(windowID, GLFW_KEY_S) == GLFW_PRESS)
         {
             cameraPosition -= cameraFront * deltaTime * forwardSpeed;
         }
         // Strafe right
-        if (glfwGetKey(windowID, GLFW_KEY_D) == GLFW_PRESS) 
+        if (glfwGetKey(windowID, GLFW_KEY_D) == GLFW_PRESS)
         {
             cameraPosition -= cameraRight * deltaTime * strafeSpeed;
         }
@@ -188,21 +188,21 @@ int main()
         // mouse movement
         if (glfwGetMouseButton(windowID, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
         {
-            // TODO: consider infinite dragging (unrestricted by window border) by getting/setting position later
-            // TODO: fix viewport teleporting later
+            // take this out of the if click to have infinite movement, similar to a FPS
+            // currently, first click will introduce a tiny bit of teleportation
             glfwGetCursorPos(windowID, &currXpos, &currYpos);
-            deltaX = (currXpos - lastXpos)/screenWidth;
-            deltaY = (currYpos - lastYpos)/screenHeight;
-            lastXpos = currXpos;
-            lastYpos = currYpos;
-            
+            glfwSetCursorPos(windowID, centerX, centerY);
+
+            deltaX = (currXpos - centerX) / screenWidth;
+            deltaY = (currYpos - centerY) / screenHeight;
+
             yaw -= deltaX * sens;
             pitch += deltaY * sens;
         }
 
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        
+
         /* Render here */
         glBindVertexArray(axesVA);
         axesShader.Bind();
