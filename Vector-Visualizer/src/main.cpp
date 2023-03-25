@@ -75,13 +75,15 @@ int main()
     glm::mat4 viewMatrix = glm::lookAt(cameraPosition, cameraPosition + cameraFront, cameraUp);
     glm::mat4 projMatrix = glm::perspective(glm::radians(45.0f), aspectRatio, 0.1f, 1000.0f);
 
-    glm::mat4 MVP = projMatrix * viewMatrix * modelMatrix;
-
     // upload uniforms
     axesShader.Bind();
-    axesShader.SetUniformMat4f("u_MVP", MVP);
+    axesShader.SetUniformMat4f("u_Model", modelMatrix);
+    axesShader.SetUniformMat4f("u_View", viewMatrix);
+    axesShader.SetUniformMat4f("u_Projection", projMatrix);
     vectorShader.Bind();
-    vectorShader.SetUniformMat4f("u_MVP", MVP);
+    vectorShader.SetUniformMat4f("u_Model", modelMatrix);
+    vectorShader.SetUniformMat4f("u_View", viewMatrix);
+    vectorShader.SetUniformMat4f("u_Projection", projMatrix);
 
     // openGL settings
     glEnable(GL_DEPTH_TEST);
@@ -117,17 +119,13 @@ int main()
         cameraRight = glm::normalize(glm::cross(worldUp, unitcameraFront));
         cameraUp = glm::cross(unitcameraFront, cameraRight);
 
-        modelMatrix = glm::mat4(1.0f);
         viewMatrix = glm::lookAt(cameraPosition, cameraPosition + cameraFront, cameraUp);
-        projMatrix = glm::perspective(glm::radians(45.0f), aspectRatio, 0.1f, 1000.0f);
-
-        MVP = projMatrix * viewMatrix * modelMatrix;
 
         // upload uniforms
         axesShader.Bind();
-        axesShader.SetUniformMat4f("u_MVP", MVP);
+        axesShader.SetUniformMat4f("u_View", viewMatrix);
         vectorShader.Bind();
-        vectorShader.SetUniformMat4f("u_MVP", MVP);
+        vectorShader.SetUniformMat4f("u_View", viewMatrix);
 
         // keyboard input
         // Move forward
