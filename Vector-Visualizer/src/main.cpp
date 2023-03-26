@@ -8,6 +8,7 @@
 #include "renderer/VertexBuffer.h"
 #include "renderer/VertexArray.h"
 #include "renderer/Shader.h"
+#include "renderer/Camera.h"
 
 int main()
 {
@@ -75,28 +76,17 @@ int main()
     Shader shader(vertexFilepath, fragmentFilepath);
 
     // camera setup
-    double yaw = -90.0;
-    double pitch = 0.0;
+    double yaw = -135.0; // initially looks at the origin
+    double pitch = -30.0;
     glm::vec3 cameraPosition = { 5.0f, 5.0f, 5.0f };
-    glm::vec3 cameraFront =
-    {
-        cos(glm::radians(yaw)) * cos(glm::radians(pitch)),
-        sin(glm::radians(pitch)),
-        sin(glm::radians(yaw)) * cos(glm::radians(pitch))
-    };
-
-    glm::vec3 worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
-    glm::vec3 cameraRight = glm::normalize(glm::cross(worldUp, cameraFront));
-    glm::vec3 cameraUp = glm::cross(cameraFront, cameraRight);
-
+    Camera camera(cameraPosition, yaw, pitch);
     glm::mat4 modelMatrix = glm::mat4(1.0f);
-    glm::mat4 viewMatrix = glm::lookAt(cameraPosition, cameraPosition + cameraFront, cameraUp);
     glm::mat4 projMatrix = glm::perspective(glm::radians(45.0f), aspectRatio, 0.1f, 1000.0f);
 
     // upload uniforms
     shader.Bind();
     shader.SetUniformMat4f("u_Model", modelMatrix);
-    shader.SetUniformMat4f("u_View", viewMatrix);
+    shader.SetUniformMat4f("u_View", camera.GetViewMatrix());
     shader.SetUniformMat4f("u_Projection", projMatrix);
 
     // openGL settings
@@ -126,49 +116,45 @@ int main()
         deltaTime = float(currentTime - lastTime);
 
         // camera updates per frame
-        cameraFront.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-        cameraFront.y = sin(glm::radians(pitch));
-        cameraFront.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-
-        cameraRight = glm::normalize(glm::cross(worldUp, cameraFront));
-        cameraUp = glm::cross(cameraFront, cameraRight);
-
-        viewMatrix = glm::lookAt(cameraPosition, cameraPosition + cameraFront, cameraUp);
+        camera.LookAt(yaw, pitch);
+        camera.SetViewMatrix();
 
         // upload uniforms
         shader.Bind();
-        shader.SetUniformMat4f("u_View", viewMatrix);
+        shader.SetUniformMat4f("u_View", camera.GetViewMatrix());
 
         // keyboard input
         // Move forward
         if (glfwGetKey(windowID, GLFW_KEY_W) == GLFW_PRESS)
         {
-            cameraPosition += cameraFront * deltaTime * forwardSpeed;
-        }
-        // Strafe left
-        if (glfwGetKey(windowID, GLFW_KEY_A) == GLFW_PRESS)
-        {
-            cameraPosition += cameraRight * deltaTime * strafeSpeed;
+            /*cameraPosition += cameraFront * deltaTime * forwardSpeed;*/
+            camera.MoveCamera(camera.GetCameraFront(), deltaTime* forwardSpeed);
         }
         // Move backward
         if (glfwGetKey(windowID, GLFW_KEY_S) == GLFW_PRESS)
         {
-            cameraPosition -= cameraFront * deltaTime * forwardSpeed;
+            camera.MoveCamera(-camera.GetCameraFront(), deltaTime * forwardSpeed);
+        }
+        // Strafe left
+        if (glfwGetKey(windowID, GLFW_KEY_A) == GLFW_PRESS)
+        {
+            /*cameraPosition += cameraRight * deltaTime * strafeSpeed;*/
+            camera.MoveCamera(camera.GetCameraRight(), deltaTime* forwardSpeed);
         }
         // Strafe right
         if (glfwGetKey(windowID, GLFW_KEY_D) == GLFW_PRESS)
         {
-            cameraPosition -= cameraRight * deltaTime * strafeSpeed;
+            camera.MoveCamera(-camera.GetCameraRight(), deltaTime * forwardSpeed);
         }
         // fly up
         if (glfwGetKey(windowID, GLFW_KEY_SPACE) == GLFW_PRESS)
         {
-            cameraPosition += cameraUp * deltaTime * strafeSpeed;
+            camera.MoveCamera(camera.GetCameraUp(), deltaTime * forwardSpeed);
         }
         // drop down
         if (glfwGetKey(windowID, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
         {
-            cameraPosition -= cameraUp * deltaTime * strafeSpeed;
+            camera.MoveCamera(-camera.GetCameraUp(), deltaTime * forwardSpeed);
         }
 
         // pitch up
@@ -195,8 +181,8 @@ int main()
         // mouse movement
 
         glfwGetCursorPos(windowID, &currXpos, &currYpos);
-        deltaX = (currXpos - lastXpos) / screenWidth;
-        deltaY = (currYpos - lastYpos) / screenHeight;
+        deltaX = (currXpos - lastXpos) / screenWidth;  // it is bounded by -1 and 1
+        deltaY = (currYpos - lastYpos) / screenHeight; // it is bounded by -1 and 1
         lastXpos = currXpos;
         lastYpos = currYpos;
 
