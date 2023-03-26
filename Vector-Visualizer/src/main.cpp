@@ -6,6 +6,7 @@
 
 #include "Window.h"
 #include "renderer/VertexBuffer.h"
+#include "renderer/VertexArray.h"
 #include "renderer/Shader.h"
 
 int main()
@@ -15,51 +16,63 @@ int main()
     float aspectRatio = screenWidth / screenHeight;
     Window window(screenWidth, screenHeight, "Vector Visualizer", NULL);
 
+    VertexBufferLayout layout;
+    layout.Push<float>(3); // 3d coordinates
+    layout.Push<float>(4); // colors
+
     // axes setup
     static const float axes[]
     {
-        -10.0f,  0.0f, 0.0f, // x axis
-        10.0f,  0.0f, 0.0f,
-        0.0f,  -10.0f, 0.0f, // y axis
+        0.0f,  0.0f, 0.0f, // positive x axis
+        1.0f, 0.0f, 0.0f, 1.0f, 
+        10.0f,  0.0f, 0.0f, 
+        1.0f, 0.0f, 0.0f, 1.0f,
+        0.0f,  0.0f, 0.0f, // negative x axis (TODO: color is different numerically, but not visually)
+        0.8f, 0.0f, 0.0f, 1.0f,
+        -10.0f,  0.0f, 0.0f,
+        0.8f, 0.0f, 0.0f, 1.0f,
+        0.0f,  0.0f, 0.0f, // positive y axis
+        0.0f, 1.0f, 0.0f, 1.0f,
         0.0f,  10.0f, 0.0f,
-        0.0f,  0.0f, -10.0f, // z axis
-        0.0f,  0.0f, 10.0f
+        0.0f, 1.0f, 0.0f, 1.0f,
+        0.0f,  0.0f, 0.0f, // negative y axis (TODO: color is different numerically, but not visually)
+        0.0f, 0.8f, 0.0f, 1.0f,
+        0.0f, -10.0f, 0.0f,
+        0.0f, 0.8f, 0.0f, 1.0f,
+        0.0f,  0.0f, 0.0f, // positive z axis 
+        0.0f, 0.0f, 1.0f, 1.0f,
+        0.0f,  0.0f, 10.0f,
+        0.0f, 0.0f, 1.0f, 1.0f,
+        0.0f,  0.0f, 0.0f, // negative z axis (TODO: color is different numerically, but not visually)
+        0.0f, 0.0f, 0.8f, 1.0f,
+        0.0f,  0.0f, -10.0f,
+        0.0f, 0.0f, 1.0f, 1.0f
     };
-
-    unsigned int axesVA;
-    glGenVertexArrays(1, &axesVA);
-    glBindVertexArray(axesVA);
-
+    
+    VertexArray axesVA;
     VertexBuffer axesVB(axes, sizeof(axes));
-
     // bind vertex buffer to vertex array
-    glEnableVertexArrayAttrib(axesVA, 0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+    axesVA.AddBuffer(axesVB, layout);
 
     // vector setup
     static const float vector[]
     {
         0.0f, 0.0f, 0.0f,    // origin
+        1.0f, 0.0f, 1.0f, 1.0f,
         20.0f,  5.0f, 0.0f,  // endpoint
+        1.0f, 0.0f, 1.0f, 1.0f
     };
 
-    unsigned int vectorVA;
-    glGenVertexArrays(1, &vectorVA);
-    glBindVertexArray(vectorVA);
-
+    VertexArray vectorVA;
     VertexBuffer vectorVB(vector, sizeof(vector));
-
     // bind vertex buffer to vertex array
-    glEnableVertexArrayAttrib(vectorVA, 0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void *)0);
+    vectorVA.AddBuffer(vectorVB, layout);
 
     // shaders
     std::string vertexFilepath = "res/shaders/vertex.shader";
-    std::string axesFragmentFilepath = "res/shaders/axesFragment.shader";
-    std::string vectorFragmentFilepath = "res/shaders/vectorFragment.shader";
+    std::string fragmentFilepath = "res/shaders/fragment.shader";
 
-    Shader axesShader(vertexFilepath, axesFragmentFilepath);
-    Shader vectorShader(vertexFilepath, vectorFragmentFilepath);
+    Shader shader(vertexFilepath, fragmentFilepath);
 
     // camera setup
     double yaw = -90.0;
@@ -81,14 +94,10 @@ int main()
     glm::mat4 projMatrix = glm::perspective(glm::radians(45.0f), aspectRatio, 0.1f, 1000.0f);
 
     // upload uniforms
-    axesShader.Bind();
-    axesShader.SetUniformMat4f("u_Model", modelMatrix);
-    axesShader.SetUniformMat4f("u_View", viewMatrix);
-    axesShader.SetUniformMat4f("u_Projection", projMatrix);
-    vectorShader.Bind();
-    vectorShader.SetUniformMat4f("u_Model", modelMatrix);
-    vectorShader.SetUniformMat4f("u_View", viewMatrix);
-    vectorShader.SetUniformMat4f("u_Projection", projMatrix);
+    shader.Bind();
+    shader.SetUniformMat4f("u_Model", modelMatrix);
+    shader.SetUniformMat4f("u_View", viewMatrix);
+    shader.SetUniformMat4f("u_Projection", projMatrix);
 
     // openGL settings
     glEnable(GL_DEPTH_TEST);
@@ -104,8 +113,6 @@ int main()
     float strafeSpeed = 50.0f;
 
     // mouse movement variables
-    double centerX = screenWidth / 2;
-    double centerY = screenHeight / 2;
     double currXpos, currYpos, deltaX, deltaY;
     double lastXpos = 0.0;
     double lastYpos = 0.0;
@@ -129,10 +136,8 @@ int main()
         viewMatrix = glm::lookAt(cameraPosition, cameraPosition + cameraFront, cameraUp);
 
         // upload uniforms
-        axesShader.Bind();
-        axesShader.SetUniformMat4f("u_View", viewMatrix);
-        vectorShader.Bind();
-        vectorShader.SetUniformMat4f("u_View", viewMatrix);
+        shader.Bind();
+        shader.SetUniformMat4f("u_View", viewMatrix);
 
         // keyboard input
         // Move forward
@@ -205,12 +210,12 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         /* Render here */
-        glBindVertexArray(axesVA);
-        axesShader.Bind();
-        glDrawArrays(GL_LINES, 0, 2 * 3);
+        axesVA.Bind();
+        shader.Bind();
+        glDrawArrays(GL_LINES, 0, 2 * 6);
 
-        glBindVertexArray(vectorVA);
-        vectorShader.Bind();
+        vectorVA.Bind();
+        shader.Bind();
         glDrawArrays(GL_LINES, 0, 2 * 1);
 
         /* Swap front and back buffers */
