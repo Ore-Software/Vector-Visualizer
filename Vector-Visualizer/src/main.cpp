@@ -99,14 +99,16 @@ int main()
     // keyboard movement variables
     double currentTime = 0.0;
     double lastTime = 0.0;
-    float deltaTime = 0.0;
+    float deltaTime = 0.0f;
     float forwardSpeed = 5.0f;
-    float strafeSpeed = 50.0;
+    float strafeSpeed = 50.0f;
 
     // mouse movement variables
     double centerX = screenWidth / 2;
     double centerY = screenHeight / 2;
     double currXpos, currYpos, deltaX, deltaY;
+    double lastXpos = 0.0;
+    double lastYpos = 0.0;
     double sens = 15.0;
 
     /* Loop until the user closes the window */
@@ -186,16 +188,15 @@ int main()
         }
 
         // mouse movement
+
+        glfwGetCursorPos(windowID, &currXpos, &currYpos);
+        deltaX = (currXpos - lastXpos) / screenWidth;
+        deltaY = (currYpos - lastYpos) / screenHeight;
+        lastXpos = currXpos;
+        lastYpos = currYpos;
+
         if (glfwGetMouseButton(windowID, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
         {
-            // take this out of the if click to have infinite movement, similar to a FPS
-            // currently, first click will introduce a tiny bit of teleportation
-            glfwGetCursorPos(windowID, &currXpos, &currYpos);
-            glfwSetCursorPos(windowID, centerX, centerY);
-
-            deltaX = (currXpos - centerX) / screenWidth;
-            deltaY = (currYpos - centerY) / screenHeight;
-
             yaw -= deltaX * sens;
             pitch += deltaY * sens;
         }
