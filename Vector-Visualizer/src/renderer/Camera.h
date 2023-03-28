@@ -20,10 +20,10 @@ public:
 	void MoveCamera(glm::vec3 direction, float speed);
 	void LookAt(double yaw, double pitch);
 
-	glm::vec3 GetCameraFront();
-	glm::vec3 GetCameraRight();
-	glm::vec3 GetCameraUp();
+	glm::vec3 GetCameraFront() const;
+	glm::vec3 GetCameraRight() const;
+	glm::vec3 GetCameraUp() const;
 
 	void SetViewMatrix();
-	glm::mat4 GetViewMatrix();
+	glm::mat4 GetViewMatrix() const;
 };

@@ -27,17 +27,17 @@ void Camera::LookAt(double yaw, double pitch)
     };
 }
 
-glm::vec3 Camera::GetCameraFront()
+glm::vec3 Camera::GetCameraFront() const
 {
     return m_CameraFront;
 }
 
-glm::vec3 Camera::GetCameraRight()
+glm::vec3 Camera::GetCameraRight() const
 {
     return m_CameraRight;
 }
 
-glm::vec3 Camera::GetCameraUp()
+glm::vec3 Camera::GetCameraUp() const
 {
     return m_CameraUp;
 }
@@ -51,7 +51,7 @@ void Camera::SetViewMatrix()
     m_ViewMatrix = glm::lookAt(m_CameraPosition, m_CameraPosition + m_CameraFront, m_CameraUp);
 }
 
-glm::mat4 Camera::GetViewMatrix()
+glm::mat4 Camera::GetViewMatrix() const
 {
     return m_ViewMatrix;
 }
