@@ -1,10 +1,15 @@
 #include "external/glm/glm.hpp"
 #include "external/glm/gtc/matrix_transform.hpp"
+#include "external/imgui/imgui.h"
+#include "external/imgui/imgui_impl_glfw.h"
+#include "external/imgui/imgui_impl_opengl3.h"
 
 #include <iostream>
 #include <string>
+#include <vector>
 
 #include "Window.h"
+#include "VectorObject.h"
 #include "renderer/VertexBuffer.h"
 #include "renderer/VertexArray.h"
 #include "renderer/Shader.h"
@@ -51,21 +56,45 @@ int main()
     };
     
     VertexArray axesVA;
-    VertexBuffer axesVB(axes, sizeof(axes));
+    VertexBuffer axesVB(axes, sizeof(axes), MODE::STATIC);
     // bind vertex buffer to vertex array
     axesVA.AddBuffer(axesVB, layout);
 
     // vector setup
-    static const float vector[]
+    VectorObject vector1(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(20.0f, 5.0f, 0.0f), glm::vec4(1.0f, 0.0f, 1.0f, 1.0f));
+    VectorObject vector2(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(25.0f, -5.0f, 0.0f), glm::vec4(1.0f, 0.0f, 1.0f, 1.0f));
+    //VectorObject vector3();
+
+    std::vector<VectorObject> vectors
     {
-        0.0f, 0.0f, 0.0f,    // origin
-        1.0f, 0.0f, 1.0f, 1.0f,
-        20.0f,  5.0f, 0.0f,  // endpoint
-        1.0f, 0.0f, 1.0f, 1.0f
+        vector1, vector2
     };
 
+    std::vector<float> vectorBuffer;
+
+    for (VectorObject i : vectors)
+    {
+        vectorBuffer.push_back(i.m_Origin.x);
+        vectorBuffer.push_back(i.m_Origin.y);
+        vectorBuffer.push_back(i.m_Origin.z);
+
+        vectorBuffer.push_back(i.m_Color.x);
+        vectorBuffer.push_back(i.m_Color.y);
+        vectorBuffer.push_back(i.m_Color.z);
+        vectorBuffer.push_back(i.m_Color.w);
+
+        vectorBuffer.push_back(i.m_Direction.x);
+        vectorBuffer.push_back(i.m_Direction.y);
+        vectorBuffer.push_back(i.m_Direction.z);
+
+        vectorBuffer.push_back(i.m_Color.x);
+        vectorBuffer.push_back(i.m_Color.y);
+        vectorBuffer.push_back(i.m_Color.z);
+        vectorBuffer.push_back(i.m_Color.w);
+    }
+
     VertexArray vectorVA;
-    VertexBuffer vectorVB(vector, sizeof(vector));
+    VertexBuffer vectorVB(vectorBuffer.data(), sizeof(float) * vectorBuffer.size(), MODE::DYNAMIC);
     // bind vertex buffer to vertex array
     vectorVA.AddBuffer(vectorVB, layout);
 
@@ -107,6 +136,15 @@ int main()
     double lastXpos = 0.0;
     double lastYpos = 0.0;
     double sens = 15.0;
+
+
+    // Setup Dear ImGui context
+    ImGui::CreateContext();
+    // Setup Platform/Renderer bindings
+    ImGui_ImplGlfw_InitForOpenGL(windowID, true);
+    ImGui_ImplOpenGL3_Init();
+    // Setup Dear ImGui style
+    ImGui::StyleColorsDark();
 
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(windowID))
@@ -186,14 +224,20 @@ int main()
         lastXpos = currXpos;
         lastYpos = currYpos;
 
-        if (glfwGetMouseButton(windowID, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
+        if (!ImGui::GetIO().WantCaptureMouse && glfwGetMouseButton(windowID, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
         {
             yaw -= deltaX * sens;
             pitch += deltaY * sens;
         }
 
+        // clearing per frame
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        // imgui new frame
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
 
         /* Render here */
         axesVA.Bind();
@@ -202,7 +246,50 @@ int main()
 
         vectorVA.Bind();
         shader.Bind();
-        glDrawArrays(GL_LINES, 0, 2 * 1);
+        glDrawArrays(GL_LINES, 0, 2 * vectors.size());
+
+        // imgui vector controls
+        ImGui::Begin("Demo window");
+        for (int j = 0; j < vectors.size(); j++)
+        {
+            ImGui::PushID(j);
+            ImGui::Text("Vector %d", j + 1);
+            ImGui::SliderFloat3("Origin", &vectors[j].m_Origin.x, -20.0f, 20.0f);
+            ImGui::SliderFloat3("Direction", &vectors[j].m_Direction.x, -20.0f, 20.0f);
+            ImGui::ColorEdit4("Color", &vectors[j].m_Color.x);
+            if (ImGui::Button("Apply Changes"))
+            {
+                vectorBuffer[14 * j + 0] = vectors[j].m_Origin.x;
+                vectorBuffer[14 * j + 1] = vectors[j].m_Origin.y;
+                vectorBuffer[14 * j + 2] = vectors[j].m_Origin.z;
+
+                vectorBuffer[14 * j + 3] = vectors[j].m_Color.x;
+                vectorBuffer[14 * j + 4] = vectors[j].m_Color.y;
+                vectorBuffer[14 * j + 5] = vectors[j].m_Color.z;
+                vectorBuffer[14 * j + 6] = vectors[j].m_Color.w;
+
+                vectorBuffer[14 * j + 7] = vectors[j].m_Direction.x;
+                vectorBuffer[14 * j + 8] = vectors[j].m_Direction.y;
+                vectorBuffer[14 * j + 9] = vectors[j].m_Direction.z;
+
+                vectorBuffer[14 * j + 10] = vectors[j].m_Color.x;
+                vectorBuffer[14 * j + 11] = vectors[j].m_Color.y;
+                vectorBuffer[14 * j + 12] = vectors[j].m_Color.z;
+                vectorBuffer[14 * j + 13] = vectors[j].m_Color.w;
+
+                vectorVA.Bind();
+                vectorVB.Bind();
+                glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vectorBuffer.size(), vectorBuffer.data(), GL_DYNAMIC_DRAW);
+            };
+            ImGui::Spacing();
+            ImGui::Separator();
+            ImGui::PopID();
+        }
+        ImGui::End();
+        
+        ImGui::EndFrame();
+        ImGui::Render();
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
         /* Swap front and back buffers */
         glfwSwapBuffers(windowID);
@@ -210,6 +297,9 @@ int main()
         /* Poll for and process events */
         glfwPollEvents();
     }
+
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
 
     window.~Window();
     return 0;

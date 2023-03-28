@@ -142,11 +142,19 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\external\glad\glad.c" />
+    <ClCompile Include="src\external\imgui\imgui.cpp" />
+    <ClCompile Include="src\external\imgui\imgui_demo.cpp" />
+    <ClCompile Include="src\external\imgui\imgui_draw.cpp" />
+    <ClCompile Include="src\external\imgui\imgui_impl_glfw.cpp" />
+    <ClCompile Include="src\external\imgui\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="src\external\imgui\imgui_tables.cpp" />
+    <ClCompile Include="src\external\imgui\imgui_widgets.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\renderer\Camera.cpp" />
     <ClCompile Include="src\renderer\Shader.cpp" />
     <ClCompile Include="src\renderer\VertexArray.cpp" />
     <ClCompile Include="src\renderer\VertexBuffer.cpp" />
+    <ClCompile Include="src\VectorObject.cpp" />
     <ClCompile Include="src\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -436,8 +444,18 @@
     <ClInclude Include="src\external\glm\vec3.hpp" />
     <ClInclude Include="src\external\glm\vec4.hpp" />
     <ClInclude Include="src\external\glm\vector_relational.hpp" />
+    <ClInclude Include="src\external\imgui\imconfig.h" />
+    <ClInclude Include="src\external\imgui\imgui.h" />
+    <ClInclude Include="src\external\imgui\imgui_impl_glfw.h" />
+    <ClInclude Include="src\external\imgui\imgui_impl_opengl3.h" />
+    <ClInclude Include="src\external\imgui\imgui_impl_opengl3_loader.h" />
+    <ClInclude Include="src\external\imgui\imgui_internal.h" />
+    <ClInclude Include="src\external\imgui\imstb_rectpack.h" />
+    <ClInclude Include="src\external\imgui\imstb_textedit.h" />
+    <ClInclude Include="src\external\imgui\imstb_truetype.h" />
     <ClInclude Include="src\renderer\Camera.h" />
     <ClInclude Include="src\renderer\Shader.h" />
+    <ClInclude Include="src\VectorObject.h" />
     <ClInclude Include="src\renderer\VertexArray.h" />
     <ClInclude Include="src\renderer\VertexBufferLayout.h" />
     <ClInclude Include="src\renderer\VertexBuffer.h" />
