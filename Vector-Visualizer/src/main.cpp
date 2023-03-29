@@ -30,29 +30,29 @@ int main()
     static const float axes[]
     {
         0.0f,  0.0f, 0.0f, // positive x axis
-        1.0f, 0.0f, 0.0f, 1.0f, 
+        1.0f, 0.0f, 0.0f, 1.0f,
         10.0f,  0.0f, 0.0f, 
         1.0f, 0.0f, 0.0f, 1.0f,
-        0.0f,  0.0f, 0.0f, // negative x axis (TODO: color is different numerically, but not visually)
-        0.8f, 0.0f, 0.0f, 1.0f,
+        0.0f,  0.0f, 0.0f, // negative x axis
+        0.95f, 0.13f, 0.11f, 1.0f,
         -10.0f,  0.0f, 0.0f,
-        0.8f, 0.0f, 0.0f, 1.0f,
+        0.95f, 0.13f, 0.11f, 1.0f,
         0.0f,  0.0f, 0.0f, // positive y axis
         0.0f, 1.0f, 0.0f, 1.0f,
         0.0f,  10.0f, 0.0f,
         0.0f, 1.0f, 0.0f, 1.0f,
-        0.0f,  0.0f, 0.0f, // negative y axis (TODO: color is different numerically, but not visually)
-        0.0f, 0.8f, 0.0f, 1.0f,
+        0.0f,  0.0f, 0.0f, // negative y axis
+        0.10f, 0.83f, 0.16f, 1.0f,
         0.0f, -10.0f, 0.0f,
-        0.0f, 0.8f, 0.0f, 1.0f,
+        0.10f, 0.83f, 0.16f, 1.0f,
         0.0f,  0.0f, 0.0f, // positive z axis 
         0.0f, 0.0f, 1.0f, 1.0f,
         0.0f,  0.0f, 10.0f,
         0.0f, 0.0f, 1.0f, 1.0f,
-        0.0f,  0.0f, 0.0f, // negative z axis (TODO: color is different numerically, but not visually)
-        0.0f, 0.0f, 0.8f, 1.0f,
+        0.0f,  0.0f, 0.0f, // negative z axis
+        0.13f, 0.26f, 0.98f, 1.0f,
         0.0f,  0.0f, -10.0f,
-        0.0f, 0.0f, 1.0f, 1.0f
+        0.13f, 0.26f, 0.98f, 1.0f,
     };
     
     VertexArray axesVA;
@@ -62,7 +62,7 @@ int main()
 
     // vector setup
     VectorObject vector1(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(20.0f, 5.0f, 0.0f), glm::vec4(1.0f, 0.0f, 1.0f, 1.0f));
-    VectorObject vector2(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(25.0f, -5.0f, 0.0f), glm::vec4(1.0f, 0.0f, 1.0f, 1.0f));
+    VectorObject vector2(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(5.0f, -5.0f, 2.0f), glm::vec4(0.98f, 0.73f, 0.02f, 1.0f));
     //VectorObject vector3();
 
     std::vector<VectorObject> vectors
@@ -284,6 +284,33 @@ int main()
             ImGui::Spacing();
             ImGui::Separator();
             ImGui::PopID();
+        }
+        if (ImGui::Button("Add vector"))
+        {
+            VectorObject newVec(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(5.0f, -5.0f, 2.0f), glm::vec4(0.98f, 0.73f, 0.02f, 1.0f));
+            vectors.push_back(newVec);
+
+            vectorBuffer.push_back(newVec.m_Origin.x);
+            vectorBuffer.push_back(newVec.m_Origin.y);
+            vectorBuffer.push_back(newVec.m_Origin.z);
+            
+            vectorBuffer.push_back(newVec.m_Color.x);
+            vectorBuffer.push_back(newVec.m_Color.y);
+            vectorBuffer.push_back(newVec.m_Color.z);
+            vectorBuffer.push_back(newVec.m_Color.w);
+            
+            vectorBuffer.push_back(newVec.m_Direction.x);
+            vectorBuffer.push_back(newVec.m_Direction.y);
+            vectorBuffer.push_back(newVec.m_Direction.z);
+            
+            vectorBuffer.push_back(newVec.m_Color.x);
+            vectorBuffer.push_back(newVec.m_Color.y);
+            vectorBuffer.push_back(newVec.m_Color.z);
+            vectorBuffer.push_back(newVec.m_Color.w);
+
+            vectorVA.Bind();
+            vectorVB.Bind();
+            glBufferData(GL_ARRAY_BUFFER, sizeof(float)* vectorBuffer.size(), vectorBuffer.data(), GL_DYNAMIC_DRAW);
         }
         ImGui::End();
         
