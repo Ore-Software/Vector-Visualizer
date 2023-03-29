@@ -1,5 +1,6 @@
 #include "external/glm/glm.hpp"
 #include "external/glm/gtc/matrix_transform.hpp"
+#include "external/glm/gtc/random.hpp"
 #include "external/imgui/imgui.h"
 #include "external/imgui/imgui_impl_glfw.h"
 #include "external/imgui/imgui_impl_opengl3.h"
@@ -83,6 +84,14 @@ int main()
     // bind vertex buffer to vertex array
     vectorVA.AddBuffer(vectorVB, layout);
 
+    // transformation matrix
+    float transMatrix[]
+    {
+        1.0f,  0.0f, 0.0f, // row 1
+        0.0f,  1.0f, 0.0f, // row 2
+        0.0f,  0.0f, 1.0f, // row 3
+    };
+
     // shaders
     std::string vertexFilepath = "res/shaders/vertex.shader";
     std::string fragmentFilepath = "res/shaders/fragment.shader";
@@ -151,7 +160,7 @@ int main()
         if (glfwGetKey(windowID, GLFW_KEY_W) == GLFW_PRESS)
         {
             /*cameraPosition += cameraFront * deltaTime * forwardSpeed;*/
-            camera.MoveCamera(camera.GetCameraFront(), deltaTime* forwardSpeed);
+            camera.MoveCamera(camera.GetCameraFront(), deltaTime * forwardSpeed);
         }
         // Move backward
         if (glfwGetKey(windowID, GLFW_KEY_S) == GLFW_PRESS)
@@ -185,15 +194,15 @@ int main()
         {
             pitch += sens * deltaTime;
         }
-        // yaw left
-        if (glfwGetKey(windowID, GLFW_KEY_LEFT) == GLFW_PRESS)
-        {
-            yaw -= sens * deltaTime;
-        }
         // pitch down
         if (glfwGetKey(windowID, GLFW_KEY_DOWN) == GLFW_PRESS)
         {
             pitch -= sens * deltaTime;
+        }
+        // yaw left
+        if (glfwGetKey(windowID, GLFW_KEY_LEFT) == GLFW_PRESS)
+        {
+            yaw -= sens * deltaTime;
         }
         // yaw right
         if (glfwGetKey(windowID, GLFW_KEY_RIGHT) == GLFW_PRESS)
@@ -234,13 +243,13 @@ int main()
         glDrawArrays(GL_LINES, 0, 2 * vectors.size());
 
         // imgui vector controls
-        ImGui::Begin("Demo window");
+        ImGui::Begin("Vector Controls");
         for (int j = 0; j < vectors.size(); j++)
         {
             ImGui::PushID(j);
             ImGui::Text("Vector %d", j + 1);
-            ImGui::SliderFloat3("Origin", &vectors[j].m_Origin.x, -20.0f, 20.0f);
-            ImGui::SliderFloat3("Direction", &vectors[j].m_Direction.x, -20.0f, 20.0f);
+            ImGui::SliderFloat3("Origin", &vectors[j].m_Origin.x, -10.0f, 10.0f);
+            ImGui::SliderFloat3("Direction", &vectors[j].m_Direction.x, -10.0f, 10.0f);
             ImGui::ColorEdit4("Color", &vectors[j].m_Color.x);
             if (ImGui::Button("Apply Changes"))
             {
@@ -273,7 +282,7 @@ int main()
         }
         if (ImGui::Button("Add vector"))
         {
-            VectorObject newVec(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(5.0f, -5.0f, 2.0f), glm::vec4(0.98f, 0.73f, 0.02f, 1.0f));
+            VectorObject newVec(glm::vec3(0.0f, 0.0f, 0.0f), glm::ballRand(5.0f), glm::vec4(glm::abs(glm::ballRand(1.0f)), 1.0f)); // uses random vector direction and random color
             vectors.push_back(newVec);
             AddVectorBufferData(vectorBuffer, newVec);
 
@@ -283,6 +292,14 @@ int main()
         }
         ImGui::End();
         
+        // imgui vector controls
+        ImGui::Begin("Matrix Transformation");
+        ImGui::Text("Matrix entries");
+        ImGui::SliderFloat3("Row 1", &transMatrix[0], -10.0f, 10.0f);
+        ImGui::SliderFloat3("Row 2", &transMatrix[3], -10.0f, 10.0f);
+        ImGui::SliderFloat3("Row 3", &transMatrix[6], -10.0f, 10.0f);
+        ImGui::End();
+
         ImGui::EndFrame();
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
