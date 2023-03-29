@@ -251,6 +251,22 @@ int main()
                 glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vectorBuffer.size(), vectorBuffer.data(), GL_DYNAMIC_DRAW);
             };
 
+            if (ImGui::Button("Remove vector"))
+            {
+                vectors.erase(vectors.begin() + j);
+                
+                // reconstruct buffer of vector vertices
+                vectorBuffer.clear();
+                for (VectorObject vec : vectors)
+                {
+                    AddVectorBufferData(vectorBuffer, vec);
+                }
+
+                vectorVA.Bind();
+                vectorVB.Bind();
+                glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vectorBuffer.size(), vectorBuffer.data(), GL_DYNAMIC_DRAW);
+            }
+
             ImGui::Spacing();
             ImGui::Separator();
             ImGui::PopID();
