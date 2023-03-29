@@ -15,6 +15,10 @@
 #include "renderer/Shader.h"
 #include "renderer/Camera.h"
 
+// function prototypes, implementations at bottom
+void AddVectorBufferData(std::vector<float>& buffer, VectorObject vectorObject);
+void EditVectorBufferData(std::vector<float>& buffer, const std::vector<VectorObject>& vectorObjects, unsigned int index);
+
 int main()
 {
     float screenWidth = 1280.0f;
@@ -61,36 +65,17 @@ int main()
     axesVA.AddBuffer(axesVB, layout);
 
     // vector setup
-    VectorObject vector1(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(20.0f, 5.0f, 0.0f), glm::vec4(1.0f, 0.0f, 1.0f, 1.0f));
-    VectorObject vector2(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(5.0f, -5.0f, 2.0f), glm::vec4(0.98f, 0.73f, 0.02f, 1.0f));
+    VectorObject vector1(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(3.0f, 4.0f, -5.0f), glm::vec4(1.0f, 0.0f, 1.0f, 1.0f));
     //VectorObject vector3();
 
-    std::vector<VectorObject> vectors
-    {
-        vector1, vector2
-    };
+    std::vector<VectorObject> vectors;
+    vectors.push_back(vector1);
 
     std::vector<float> vectorBuffer;
 
-    for (VectorObject i : vectors)
+    for (VectorObject vec : vectors)
     {
-        vectorBuffer.push_back(i.m_Origin.x);
-        vectorBuffer.push_back(i.m_Origin.y);
-        vectorBuffer.push_back(i.m_Origin.z);
-
-        vectorBuffer.push_back(i.m_Color.x);
-        vectorBuffer.push_back(i.m_Color.y);
-        vectorBuffer.push_back(i.m_Color.z);
-        vectorBuffer.push_back(i.m_Color.w);
-
-        vectorBuffer.push_back(i.m_Direction.x);
-        vectorBuffer.push_back(i.m_Direction.y);
-        vectorBuffer.push_back(i.m_Direction.z);
-
-        vectorBuffer.push_back(i.m_Color.x);
-        vectorBuffer.push_back(i.m_Color.y);
-        vectorBuffer.push_back(i.m_Color.z);
-        vectorBuffer.push_back(i.m_Color.w);
+        AddVectorBufferData(vectorBuffer, vec);
     }
 
     VertexArray vectorVA;
@@ -259,28 +244,13 @@ int main()
             ImGui::ColorEdit4("Color", &vectors[j].m_Color.x);
             if (ImGui::Button("Apply Changes"))
             {
-                vectorBuffer[14 * j + 0] = vectors[j].m_Origin.x;
-                vectorBuffer[14 * j + 1] = vectors[j].m_Origin.y;
-                vectorBuffer[14 * j + 2] = vectors[j].m_Origin.z;
-
-                vectorBuffer[14 * j + 3] = vectors[j].m_Color.x;
-                vectorBuffer[14 * j + 4] = vectors[j].m_Color.y;
-                vectorBuffer[14 * j + 5] = vectors[j].m_Color.z;
-                vectorBuffer[14 * j + 6] = vectors[j].m_Color.w;
-
-                vectorBuffer[14 * j + 7] = vectors[j].m_Direction.x;
-                vectorBuffer[14 * j + 8] = vectors[j].m_Direction.y;
-                vectorBuffer[14 * j + 9] = vectors[j].m_Direction.z;
-
-                vectorBuffer[14 * j + 10] = vectors[j].m_Color.x;
-                vectorBuffer[14 * j + 11] = vectors[j].m_Color.y;
-                vectorBuffer[14 * j + 12] = vectors[j].m_Color.z;
-                vectorBuffer[14 * j + 13] = vectors[j].m_Color.w;
+                EditVectorBufferData(vectorBuffer, vectors, j);
 
                 vectorVA.Bind();
                 vectorVB.Bind();
                 glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vectorBuffer.size(), vectorBuffer.data(), GL_DYNAMIC_DRAW);
             };
+
             ImGui::Spacing();
             ImGui::Separator();
             ImGui::PopID();
@@ -289,24 +259,7 @@ int main()
         {
             VectorObject newVec(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(5.0f, -5.0f, 2.0f), glm::vec4(0.98f, 0.73f, 0.02f, 1.0f));
             vectors.push_back(newVec);
-
-            vectorBuffer.push_back(newVec.m_Origin.x);
-            vectorBuffer.push_back(newVec.m_Origin.y);
-            vectorBuffer.push_back(newVec.m_Origin.z);
-            
-            vectorBuffer.push_back(newVec.m_Color.x);
-            vectorBuffer.push_back(newVec.m_Color.y);
-            vectorBuffer.push_back(newVec.m_Color.z);
-            vectorBuffer.push_back(newVec.m_Color.w);
-            
-            vectorBuffer.push_back(newVec.m_Direction.x);
-            vectorBuffer.push_back(newVec.m_Direction.y);
-            vectorBuffer.push_back(newVec.m_Direction.z);
-            
-            vectorBuffer.push_back(newVec.m_Color.x);
-            vectorBuffer.push_back(newVec.m_Color.y);
-            vectorBuffer.push_back(newVec.m_Color.z);
-            vectorBuffer.push_back(newVec.m_Color.w);
+            AddVectorBufferData(vectorBuffer, newVec);
 
             vectorVA.Bind();
             vectorVB.Bind();
@@ -330,4 +283,46 @@ int main()
 
     window.~Window();
     return 0;
+}
+
+void AddVectorBufferData(std::vector<float>& buffer, VectorObject vectorObject)
+{
+    buffer.push_back(vectorObject.m_Origin.x);
+    buffer.push_back(vectorObject.m_Origin.y);
+    buffer.push_back(vectorObject.m_Origin.z);
+
+    buffer.push_back(vectorObject.m_Color.x);
+    buffer.push_back(vectorObject.m_Color.y);
+    buffer.push_back(vectorObject.m_Color.z);
+    buffer.push_back(vectorObject.m_Color.w);
+
+    buffer.push_back(vectorObject.m_Direction.x);
+    buffer.push_back(vectorObject.m_Direction.y);
+    buffer.push_back(vectorObject.m_Direction.z);
+
+    buffer.push_back(vectorObject.m_Color.x);
+    buffer.push_back(vectorObject.m_Color.y);
+    buffer.push_back(vectorObject.m_Color.z);
+    buffer.push_back(vectorObject.m_Color.w);
+}
+
+void EditVectorBufferData(std::vector<float>& buffer, const std::vector<VectorObject>& vectorObjects, unsigned int index)
+{
+    buffer[14 * index + 0] = vectorObjects[index].m_Origin.x;
+    buffer[14 * index + 1] = vectorObjects[index].m_Origin.y;
+    buffer[14 * index + 2] = vectorObjects[index].m_Origin.z;
+
+    buffer[14 * index + 3] = vectorObjects[index].m_Color.x;
+    buffer[14 * index + 4] = vectorObjects[index].m_Color.y;
+    buffer[14 * index + 5] = vectorObjects[index].m_Color.z;
+    buffer[14 * index + 6] = vectorObjects[index].m_Color.w;
+
+    buffer[14 * index + 7] = vectorObjects[index].m_Direction.x;
+    buffer[14 * index + 8] = vectorObjects[index].m_Direction.y;
+    buffer[14 * index + 9] = vectorObjects[index].m_Direction.z;
+
+    buffer[14 * index + 10] = vectorObjects[index].m_Color.x;
+    buffer[14 * index + 11] = vectorObjects[index].m_Color.y;
+    buffer[14 * index + 12] = vectorObjects[index].m_Color.z;
+    buffer[14 * index + 13] = vectorObjects[index].m_Color.w;
 }
