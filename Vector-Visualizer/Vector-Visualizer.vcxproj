@@ -150,6 +150,9 @@
     <ClCompile Include="src\external\imgui\imgui_tables.cpp" />
     <ClCompile Include="src\external\imgui\imgui_widgets.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\modes\Mode.cpp" />
+    <ClCompile Include="src\modes\ModeVectorMultiple.cpp" />
+    <ClCompile Include="src\modes\ModeVectorTransformation.cpp" />
     <ClCompile Include="src\renderer\Camera.cpp" />
     <ClCompile Include="src\renderer\Shader.cpp" />
     <ClCompile Include="src\renderer\VertexArray.cpp" />
@@ -453,12 +456,16 @@
     <ClInclude Include="src\external\imgui\imstb_rectpack.h" />
     <ClInclude Include="src\external\imgui\imstb_textedit.h" />
     <ClInclude Include="src\external\imgui\imstb_truetype.h" />
+    <ClInclude Include="src\modes\Mode.h" />
+    <ClInclude Include="src\modes\ModeVectorMultiple.h" />
+    <ClInclude Include="src\modes\ModeVectorTransformation.h" />
     <ClInclude Include="src\renderer\Camera.h" />
     <ClInclude Include="src\renderer\Shader.h" />
     <ClInclude Include="src\VectorObject.h" />
     <ClInclude Include="src\renderer\VertexArray.h" />
     <ClInclude Include="src\renderer\VertexBufferLayout.h" />
     <ClInclude Include="src\renderer\VertexBuffer.h" />
+    <ClInclude Include="src\VectorObjectUtils.h" />
     <ClInclude Include="src\Window.h" />
   </ItemGroup>
   <ItemGroup>
