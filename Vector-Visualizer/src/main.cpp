@@ -11,14 +11,14 @@
 
 #include "Window.h"
 #include "VectorObject.h"
+#include "VectorObjectUtils.h"
 #include "renderer/VertexBuffer.h"
 #include "renderer/VertexArray.h"
 #include "renderer/Shader.h"
 #include "renderer/Camera.h"
 
-// function prototypes, implementations at bottom
-void AddVectorBufferData(std::vector<float>& buffer, VectorObject vectorObject);
-void EditVectorBufferData(std::vector<float>& buffer, const std::vector<VectorObject>& vectorObjects, unsigned int index);
+#include "modes/ModeVectorMultiple.h"
+#include "modes/ModeVectorTransformation.h"
 
 int main()
 {
@@ -140,6 +140,14 @@ int main()
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();
 
+    displayMode::Mode* currentMode = nullptr;
+    displayMode::ModeMenu* modeMenu = new displayMode::ModeMenu(currentMode);
+    currentMode = modeMenu;
+
+    // TODO: correctly register (vectors, vectorBuffer, vectorVA, vectorVB) to mode, so that we are able to modify it in the render loop
+    modeMenu->RegisterMode<displayMode::ModeVectorMultiple>("Multiple Vectors");
+    modeMenu->RegisterMode<displayMode::ModeVectorTransformation>("Matrix Transformation");
+
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(windowID))
     {
@@ -211,7 +219,6 @@ int main()
         }
 
         // mouse movement
-
         glfwGetCursorPos(windowID, &currXpos, &currYpos);
         deltaX = (currXpos - lastXpos) / screenWidth;  // it is bounded by -1 and 1
         deltaY = (currYpos - lastYpos) / screenHeight; // it is bounded by -1 and 1
@@ -228,11 +235,6 @@ int main()
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // imgui new frame
-        ImGui_ImplOpenGL3_NewFrame();
-        ImGui_ImplGlfw_NewFrame();
-        ImGui::NewFrame();
-
         /* Render here */
         axesVA.Bind();
         shader.Bind();
@@ -242,63 +244,45 @@ int main()
         shader.Bind();
         glDrawArrays(GL_LINES, 0, 2 * vectors.size());
 
-        // imgui vector controls
-        ImGui::Begin("Vector Controls");
-        for (int j = 0; j < vectors.size(); j++)
+        // imgui new frame
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+
+        // mode switching
+        if (currentMode)
         {
-            ImGui::PushID(j);
-            ImGui::Text("Vector %d", j + 1);
-            ImGui::SliderFloat3("Origin", &vectors[j].m_Origin.x, -10.0f, 10.0f);
-            ImGui::SliderFloat3("Direction", &vectors[j].m_Direction.x, -10.0f, 10.0f);
-            ImGui::ColorEdit4("Color", &vectors[j].m_Color.x);
-            if (ImGui::Button("Apply Changes"))
+            currentMode->OnUpdate(0.0f);
+            currentMode->OnRender();
+            ImGui::Begin("Modes");
+            if (currentMode == modeMenu)
             {
-                EditVectorBufferData(vectorBuffer, vectors, j);
-
-                vectorVA.Bind();
-                vectorVB.Bind();
-                glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vectorBuffer.size(), vectorBuffer.data(), GL_DYNAMIC_DRAW);
-            };
-
-            if (ImGui::Button("Remove vector"))
-            {
-                vectors.erase(vectors.begin() + j);
-                
-                // reconstruct buffer of vector vertices
-                vectorBuffer.clear();
-                for (VectorObject vec : vectors)
+                // imgui vector controls
+                ImGui::Begin("Vector Controls");
+                ImGui::Text("Vector");
+                ImGui::SliderFloat3("Origin", &vectors[0].m_Origin.x, -10.0f, 10.0f);
+                ImGui::SliderFloat3("Direction", &vectors[0].m_Direction.x, -10.0f, 10.0f);
+                ImGui::ColorEdit4("Color", &vectors[0].m_Color.x);
+                if (ImGui::Button("Apply Changes"))
                 {
-                    AddVectorBufferData(vectorBuffer, vec);
-                }
+                    EditVectorBufferData(vectorBuffer, vectors, 0);
 
-                vectorVA.Bind();
-                vectorVB.Bind();
-                glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vectorBuffer.size(), vectorBuffer.data(), GL_DYNAMIC_DRAW);
+                    vectorVA.Bind();
+                    vectorVB.Bind();
+                    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vectorBuffer.size(), vectorBuffer.data(), GL_DYNAMIC_DRAW);
+                };
+                ImGui::Spacing();
+                ImGui::Separator();
+                ImGui::End();
             }
-
-            ImGui::Spacing();
-            ImGui::Separator();
-            ImGui::PopID();
+            else if (currentMode != modeMenu && ImGui::Button("<- Back to mode selection"))
+            {
+                delete currentMode;
+                currentMode = modeMenu;
+            }
+            currentMode->OnImGuiRender();
+            ImGui::End();
         }
-        if (ImGui::Button("Add vector"))
-        {
-            VectorObject newVec(glm::vec3(0.0f, 0.0f, 0.0f), glm::ballRand(5.0f), glm::vec4(glm::abs(glm::ballRand(1.0f)), 1.0f)); // uses random vector direction and random color
-            vectors.push_back(newVec);
-            AddVectorBufferData(vectorBuffer, newVec);
-
-            vectorVA.Bind();
-            vectorVB.Bind();
-            glBufferData(GL_ARRAY_BUFFER, sizeof(float)* vectorBuffer.size(), vectorBuffer.data(), GL_DYNAMIC_DRAW);
-        }
-        ImGui::End();
-        
-        // imgui vector controls
-        ImGui::Begin("Matrix Transformation");
-        ImGui::Text("Matrix entries");
-        ImGui::SliderFloat3("Row 1", &transMatrix[0], -10.0f, 10.0f);
-        ImGui::SliderFloat3("Row 2", &transMatrix[3], -10.0f, 10.0f);
-        ImGui::SliderFloat3("Row 3", &transMatrix[6], -10.0f, 10.0f);
-        ImGui::End();
 
         ImGui::EndFrame();
         ImGui::Render();
@@ -310,6 +294,10 @@ int main()
         /* Poll for and process events */
         glfwPollEvents();
     }
+    // mode clean up
+    delete currentMode;
+    if (currentMode != modeMenu)
+        delete modeMenu;
 
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
@@ -318,44 +306,3 @@ int main()
     return 0;
 }
 
-void AddVectorBufferData(std::vector<float>& buffer, VectorObject vectorObject)
-{
-    buffer.push_back(vectorObject.m_Origin.x);
-    buffer.push_back(vectorObject.m_Origin.y);
-    buffer.push_back(vectorObject.m_Origin.z);
-
-    buffer.push_back(vectorObject.m_Color.x);
-    buffer.push_back(vectorObject.m_Color.y);
-    buffer.push_back(vectorObject.m_Color.z);
-    buffer.push_back(vectorObject.m_Color.w);
-
-    buffer.push_back(vectorObject.m_Direction.x);
-    buffer.push_back(vectorObject.m_Direction.y);
-    buffer.push_back(vectorObject.m_Direction.z);
-
-    buffer.push_back(vectorObject.m_Color.x);
-    buffer.push_back(vectorObject.m_Color.y);
-    buffer.push_back(vectorObject.m_Color.z);
-    buffer.push_back(vectorObject.m_Color.w);
-}
-
-void EditVectorBufferData(std::vector<float>& buffer, const std::vector<VectorObject>& vectorObjects, unsigned int index)
-{
-    buffer[14 * index + 0] = vectorObjects[index].m_Origin.x;
-    buffer[14 * index + 1] = vectorObjects[index].m_Origin.y;
-    buffer[14 * index + 2] = vectorObjects[index].m_Origin.z;
-
-    buffer[14 * index + 3] = vectorObjects[index].m_Color.x;
-    buffer[14 * index + 4] = vectorObjects[index].m_Color.y;
-    buffer[14 * index + 5] = vectorObjects[index].m_Color.z;
-    buffer[14 * index + 6] = vectorObjects[index].m_Color.w;
-
-    buffer[14 * index + 7] = vectorObjects[index].m_Direction.x;
-    buffer[14 * index + 8] = vectorObjects[index].m_Direction.y;
-    buffer[14 * index + 9] = vectorObjects[index].m_Direction.z;
-
-    buffer[14 * index + 10] = vectorObjects[index].m_Color.x;
-    buffer[14 * index + 11] = vectorObjects[index].m_Color.y;
-    buffer[14 * index + 12] = vectorObjects[index].m_Color.z;
-    buffer[14 * index + 13] = vectorObjects[index].m_Color.w;
-}
