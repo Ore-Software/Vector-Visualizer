@@ -299,6 +299,10 @@ int main()
     if (currentMode != modeMenu)
         delete modeMenu;
 
+    delete currentMode;
+    if (currentMode != modeMenu)
+        delete modeMenu;
+
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
 
