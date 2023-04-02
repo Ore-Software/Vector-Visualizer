@@ -9,6 +9,11 @@ namespace displayMode
     {
     }
 
+    ModeVectorMultiple::ModeVectorMultiple(std::vector<VectorObject>* vectors, std::vector<float>* vectorBuffer, VertexArray* vectorVA, VertexBuffer* vectorVB)
+        :m_Vectors(vectors), m_VectorBuffer(vectorBuffer), m_VectorVA(vectorVA), m_VectorVB(vectorVB)
+    {
+    }
+
     ModeVectorMultiple::~ModeVectorMultiple()
     {
     }

@@ -145,8 +145,9 @@ int main()
     currentMode = modeMenu;
 
     // TODO: correctly register (vectors, vectorBuffer, vectorVA, vectorVB) to mode, so that we are able to modify it in the render loop
-    modeMenu->RegisterMode<displayMode::ModeVectorMultiple>("Multiple Vectors");
-    modeMenu->RegisterMode<displayMode::ModeVectorTransformation>("Matrix Transformation");
+    // fixed, but now need to clean up pointers/objects in ModeVectorMultiple.cpp
+    modeMenu->RegisterMode<displayMode::ModeVectorMultiple>(&vectors, &vectorBuffer, &vectorVA, &vectorVB, "Multiple Vectors");
+    //modeMenu->RegisterMode<displayMode::ModeVectorTransformation>(&vectors, &vectorBuffer, &vectorVA, &vectorVB, "Matrix Transformation");
 
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(windowID))
