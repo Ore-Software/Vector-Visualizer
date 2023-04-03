@@ -30,36 +30,36 @@ namespace displayMode
     {
         // imgui vector controls
         ImGui::Begin("Multiple Vectors Controls");
-        //for (int j = 0; j < vectors.size(); j++)
+        //for (int j = 0; j < m_Vectors->size(); j++)
         //{
         //    ImGui::PushID(j);
         //    ImGui::Text("Vector %d", j + 1);
-        //    ImGui::SliderFloat3("Origin", &vectors[j].m_Origin.x, -10.0f, 10.0f);
-        //    ImGui::SliderFloat3("Direction", &vectors[j].m_Direction.x, -10.0f, 10.0f);
-        //    ImGui::ColorEdit4("Color", &vectors[j].m_Color.x);
+        //    /*ImGui::SliderFloat3("Origin", &(*m_Vectors)[j].m_Origin.x, -10.0f, 10.0f);
+        //    ImGui::SliderFloat3("Direction", &(*m_Vectors)[j].m_Direction.x, -10.0f, 10.0f);
+        //    ImGui::ColorEdit4("Color", &(*m_Vectors)[j].m_Color.x);*/
         //    if (ImGui::Button("Apply Changes"))
         //    {
-        //        EditVectorBufferData(vectorBuffer, vectors, j);
+        //        EditVectorBufferData(*m_VectorBuffer, *m_Vectors, j);
 
-        //        vectorVA.Bind();
-        //        vectorVB.Bind();
-        //        glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vectorBuffer.size(), vectorBuffer.data(), GL_DYNAMIC_DRAW);
+        //        m_VectorVA->Bind();
+        //        m_VectorVB->Bind();
+        //        glBufferData(GL_ARRAY_BUFFER, sizeof(float) * m_VectorBuffer->size(), m_VectorBuffer->data(), GL_DYNAMIC_DRAW);
         //    };
 
         //    if (ImGui::Button("Remove vector"))
         //    {
-        //        vectors.erase(vectors.begin() + j);
+        //        m_Vectors->erase(m_Vectors->begin() + j);
         //        
         //        // reconstruct buffer of vector vertices
-        //        vectorBuffer.clear();
-        //        for (VectorObject vec : vectors)
+        //        m_VectorBuffer->clear();
+        //        for (VectorObject vec : *m_Vectors)
         //        {
-        //            AddVectorBufferData(vectorBuffer, vec);
+        //            AddVectorBufferData(*m_VectorBuffer, vec);
         //        }
 
-        //        vectorVA.Bind();
-        //        vectorVB.Bind();
-        //        glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vectorBuffer.size(), vectorBuffer.data(), GL_DYNAMIC_DRAW);
+        //        m_VectorVA->Bind();
+        //        m_VectorVB->Bind();
+        //        glBufferData(GL_ARRAY_BUFFER, sizeof(float) * m_VectorBuffer->size(), m_VectorBuffer->data(), GL_DYNAMIC_DRAW);
         //    }
 
         //    ImGui::Spacing();
