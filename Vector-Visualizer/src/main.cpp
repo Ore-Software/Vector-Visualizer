@@ -69,20 +69,20 @@ int main()
     VectorObject vector1(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(3.0f, 4.0f, -5.0f), glm::vec4(1.0f, 0.0f, 1.0f, 1.0f));
     //VectorObject vector3();
 
-    std::vector<VectorObject> vectors;
-    vectors.push_back(vector1);
+    std::shared_ptr<std::vector<VectorObject>> vectors(new std::vector<VectorObject>);
+    vectors->push_back(vector1);
 
-    std::vector<float> vectorBuffer;
+    std::shared_ptr<std::vector<float>> vectorBuffer(new std::vector<float>);
 
-    for (VectorObject vec : vectors)
+    for (VectorObject vec : *vectors)
     {
-        AddVectorBufferData(vectorBuffer, vec);
+        AddVectorBufferData(*vectorBuffer, vec);
     }
 
-    VertexArray vectorVA;
-    VertexBuffer vectorVB(vectorBuffer.data(), sizeof(float) * vectorBuffer.size(), MODE::DYNAMIC);
+    std::shared_ptr<VertexArray> vectorVA(new VertexArray);
+    std::shared_ptr<VertexBuffer> vectorVB(new VertexBuffer(vectorBuffer->data(), sizeof(float) * vectorBuffer->size(), MODE::DYNAMIC));
     // bind vertex buffer to vertex array
-    vectorVA.AddBuffer(vectorVB, layout);
+    vectorVA->AddBuffer(*vectorVB, layout);
 
     // transformation matrix
     float transMatrix[]
@@ -146,7 +146,7 @@ int main()
 
     // TODO: correctly register (vectors, vectorBuffer, vectorVA, vectorVB) to mode, so that we are able to modify it in the render loop
     // fixed, but now need to clean up pointers/objects in ModeVectorMultiple.cpp
-    modeMenu->RegisterMode<displayMode::ModeVectorMultiple>(&vectors, &vectorBuffer, &vectorVA, &vectorVB, "Multiple Vectors");
+    modeMenu->RegisterMode<displayMode::ModeVectorMultiple>(vectors, vectorBuffer, vectorVA, vectorVB, "Multiple Vectors");
     //modeMenu->RegisterMode<displayMode::ModeVectorTransformation>(&vectors, &vectorBuffer, &vectorVA, &vectorVB, "Matrix Transformation");
 
     /* Loop until the user closes the window */
@@ -241,9 +241,9 @@ int main()
         shader.Bind();
         glDrawArrays(GL_LINES, 0, 2 * 6);
 
-        vectorVA.Bind();
+        vectorVA->Bind();
         shader.Bind();
-        glDrawArrays(GL_LINES, 0, 2 * vectors.size());
+        glDrawArrays(GL_LINES, 0, 2 * vectors->size());
 
         // imgui new frame
         ImGui_ImplOpenGL3_NewFrame();
@@ -261,16 +261,16 @@ int main()
                 // imgui vector controls
                 ImGui::Begin("Vector Controls");
                 ImGui::Text("Vector");
-                ImGui::SliderFloat3("Origin", &vectors[0].m_Origin.x, -10.0f, 10.0f);
-                ImGui::SliderFloat3("Direction", &vectors[0].m_Direction.x, -10.0f, 10.0f);
-                ImGui::ColorEdit4("Color", &vectors[0].m_Color.x);
+                ImGui::SliderFloat3("Origin", &(*vectors)[0].m_Origin.x, -10.0f, 10.0f);
+                ImGui::SliderFloat3("Direction", &(*vectors)[0].m_Direction.x, -10.0f, 10.0f);
+                ImGui::ColorEdit4("Color", &(*vectors)[0].m_Color.x);
                 if (ImGui::Button("Apply Changes"))
                 {
-                    EditVectorBufferData(vectorBuffer, vectors, 0);
+                    EditVectorBufferData(*vectorBuffer, *vectors, 0);
 
-                    vectorVA.Bind();
-                    vectorVB.Bind();
-                    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vectorBuffer.size(), vectorBuffer.data(), GL_DYNAMIC_DRAW);
+                    vectorVA->Bind();
+                    vectorVB->Bind();
+                    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vectorBuffer->size(), vectorBuffer->data(), GL_DYNAMIC_DRAW);
                 };
                 ImGui::Spacing();
                 ImGui::Separator();

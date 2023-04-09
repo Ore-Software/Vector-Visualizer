@@ -4,13 +4,17 @@
 
 #include "glad/glad.h"
 
+#include "../external/glm/glm.hpp"
+#include "../external/glm/gtc/matrix_transform.hpp"
+#include "../external/glm/gtc/random.hpp"
+
 namespace displayMode 
 {
 	class ModeVectorMultiple : public Mode
 	{
 	public:
 		ModeVectorMultiple();
-		ModeVectorMultiple(std::vector<VectorObject>* vectors, std::vector<float>* vectorBuffer, VertexArray* vectorVA, VertexBuffer* vectorVB);
+		ModeVectorMultiple(std::shared_ptr<std::vector<VectorObject>> vectors, std::shared_ptr<std::vector<float>> vectorBuffer, std::shared_ptr<VertexArray> vectorVA, std::shared_ptr<VertexBuffer> vectorVB);
 		~ModeVectorMultiple();
 
 		void OnUpdate(float deltaTime) override;
@@ -18,10 +22,10 @@ namespace displayMode
 		void OnImGuiRender() override;
 
 	private:
-		std::vector<VectorObject>* m_Vectors;
-		std::vector<float>* m_VectorBuffer;
-		VertexArray* m_VectorVA;
-		VertexBuffer* m_VectorVB;
+		std::shared_ptr<std::vector<VectorObject>> m_Vectors;
+		std::shared_ptr<std::vector<float>> m_VectorBuffer;
+		std::shared_ptr<VertexArray> m_VectorVA;
+		std::shared_ptr<VertexBuffer> m_VectorVB;
 	};
 
 }

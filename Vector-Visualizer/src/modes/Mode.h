@@ -33,7 +33,7 @@ namespace displayMode {
 		void OnImGuiRender() override;
 
 		template<typename T>
-		void RegisterMode(std::vector<VectorObject>* vectors, std::vector<float>* vectorBuffer, VertexArray* vectorVA, VertexBuffer* vectorVB, const std::string& name)
+		void RegisterMode(std::shared_ptr<std::vector<VectorObject>> vectors, std::shared_ptr<std::vector<float>> vectorBuffer, std::shared_ptr<VertexArray> vectorVA, std::shared_ptr<VertexBuffer> vectorVB, const std::string& name)
 		{
 			std::cout << "Registering mode " << name << std::endl;
 
