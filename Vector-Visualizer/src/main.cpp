@@ -66,9 +66,26 @@ int main()
     // bind vertex buffer to vertex array
     axesVA.AddBuffer(axesVB, layout);
 
+    // vectorMenu setup
+    VectorObject vectorMenu1(glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(3.0f, 4.0f, -5.0f), glm::vec4(1.0f, 0.0f, 1.0f, 1.0f));
+
+    std::shared_ptr<std::vector<VectorObject>> vectorMenu(new std::vector<VectorObject>);
+    vectorMenu->push_back(vectorMenu1);
+
+    std::shared_ptr<std::vector<float>> vectorMenuBuffer(new std::vector<float>);
+
+    for (VectorObject vec : *vectorMenu)
+    {
+        AddVectorBufferData(*vectorMenuBuffer, vec);
+    }
+
+    std::shared_ptr<VertexArray> vectorMenuVA(new VertexArray);
+    std::shared_ptr<VertexBuffer> vectorMenuVB(new VertexBuffer(vectorMenuBuffer->data(), sizeof(float) * vectorMenuBuffer->size(), MODE::DYNAMIC));
+    // bind vertex buffer to vertex array
+    vectorMenuVA->AddBuffer(*vectorMenuVB, layout);
+
     // vectorMultiple setup
     VectorObject vectorMultiple1(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(3.0f, 4.0f, -5.0f), glm::vec4(1.0f, 0.0f, 1.0f, 1.0f));
-    //VectorObject vector3();
 
     std::shared_ptr<std::vector<VectorObject>> vectorMultiple(new std::vector<VectorObject>);
     vectorMultiple->push_back(vectorMultiple1);
@@ -102,24 +119,6 @@ int main()
     std::shared_ptr<VertexBuffer> vectorTransformVB(new VertexBuffer(vectorTransformBuffer->data(), sizeof(float) * vectorTransformBuffer->size(), MODE::DYNAMIC));
     // bind vertex buffer to vertex array
     vectorTransformVA->AddBuffer(*vectorTransformVB, layout);
-
-    // vectorMenu setup
-    VectorObject vectorMenu1(glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(3.0f, 4.0f, -5.0f), glm::vec4(1.0f, 0.0f, 1.0f, 1.0f));
-
-    std::shared_ptr<std::vector<VectorObject>> vectorMenu(new std::vector<VectorObject>);
-    vectorMenu->push_back(vectorMenu1);
-
-    std::shared_ptr<std::vector<float>> vectorMenuBuffer(new std::vector<float>);
-
-    for (VectorObject vec : *vectorMenu)
-    {
-        AddVectorBufferData(*vectorMenuBuffer, vec);
-    }
-
-    std::shared_ptr<VertexArray> vectorMenuVA(new VertexArray);
-    std::shared_ptr<VertexBuffer> vectorMenuVB(new VertexBuffer(vectorMenuBuffer->data(), sizeof(float) * vectorMenuBuffer->size(), MODE::DYNAMIC));
-    // bind vertex buffer to vertex array
-    vectorMenuVA->AddBuffer(*vectorMenuVB, layout);
 
     // transformation matrix
     float transMatrix[]
@@ -180,8 +179,7 @@ int main()
     displayMode::ModeMenu* modeMenu = new displayMode::ModeMenu(nullptr, vectorMenu, vectorMenuBuffer, vectorMenuVA, vectorMenuVB);
     modeMenu->m_CurrentMode = modeMenu;
 
-    // TODO: correctly register (vectors, vectorBuffer, vectorVA, vectorVB) to mode, so that we are able to modify it in the render loop
-    // fixed, but now need to clean up pointers/objects in ModeVectorMultiple.cpp
+    // register different modes with respective (vectors, vectorBuffer, vectorVA, vectorVB)
     modeMenu->RegisterMode<displayMode::ModeVectorMultiple>(vectorMultiple, vectorMultipleBuffer, vectorMultipleVA, vectorMultipleVB, "Multiple Vectors");
     modeMenu->RegisterMode<displayMode::ModeVectorTransformation>(vectorTransform, vectorTransformBuffer, vectorTransformVA, vectorTransformVB, "Matrix Transformation");
 
