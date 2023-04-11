@@ -69,12 +69,12 @@ int main()
     VectorObject vector1(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(3.0f, 4.0f, -5.0f), glm::vec4(1.0f, 0.0f, 1.0f, 1.0f));
     //VectorObject vector3();
 
-    std::shared_ptr<std::vector<VectorObject>> vectors(new std::vector<VectorObject>);
-    vectors->push_back(vector1);
+    std::shared_ptr<std::vector<VectorObject>> vectorMultiple(new std::vector<VectorObject>);
+    vectorMultiple->push_back(vector1);
 
     std::shared_ptr<std::vector<float>> vectorBuffer(new std::vector<float>);
 
-    for (VectorObject vec : *vectors)
+    for (VectorObject vec : *vectorMultiple)
     {
         AddVectorBufferData(*vectorBuffer, vec);
     }
@@ -146,8 +146,8 @@ int main()
 
     // TODO: correctly register (vectors, vectorBuffer, vectorVA, vectorVB) to mode, so that we are able to modify it in the render loop
     // fixed, but now need to clean up pointers/objects in ModeVectorMultiple.cpp
-    modeMenu->RegisterMode<displayMode::ModeVectorMultiple>(vectors, vectorBuffer, vectorVA, vectorVB, "Multiple Vectors");
-    //modeMenu->RegisterMode<displayMode::ModeVectorTransformation>(&vectors, &vectorBuffer, &vectorVA, &vectorVB, "Matrix Transformation");
+    modeMenu->RegisterMode<displayMode::ModeVectorMultiple>(vectorMultiple, vectorBuffer, vectorVA, vectorVB, "Multiple Vectors");
+    modeMenu->RegisterMode<displayMode::ModeVectorTransformation>(vectorMultiple, vectorBuffer, vectorVA, vectorVB, "Matrix Transformation");
 
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(windowID))
@@ -243,7 +243,7 @@ int main()
 
         vectorVA->Bind();
         shader.Bind();
-        glDrawArrays(GL_LINES, 0, 2 * vectors->size());
+        glDrawArrays(GL_LINES, 0, 2 * vectorMultiple->size());
 
         // imgui new frame
         ImGui_ImplOpenGL3_NewFrame();
@@ -261,12 +261,12 @@ int main()
                 // imgui vector controls
                 ImGui::Begin("Vector Controls");
                 ImGui::Text("Vector");
-                ImGui::SliderFloat3("Origin", &(*vectors)[0].m_Origin.x, -10.0f, 10.0f);
-                ImGui::SliderFloat3("Direction", &(*vectors)[0].m_Direction.x, -10.0f, 10.0f);
-                ImGui::ColorEdit4("Color", &(*vectors)[0].m_Color.x);
+                ImGui::SliderFloat3("Origin", &(*vectorMultiple)[0].m_Origin.x, -10.0f, 10.0f);
+                ImGui::SliderFloat3("Direction", &(*vectorMultiple)[0].m_Direction.x, -10.0f, 10.0f);
+                ImGui::ColorEdit4("Color", &(*vectorMultiple)[0].m_Color.x);
                 if (ImGui::Button("Apply Changes"))
                 {
-                    EditVectorBufferData(*vectorBuffer, *vectors, 0);
+                    EditVectorBufferData(*vectorBuffer, *vectorMultiple, 0);
 
                     vectorVA->Bind();
                     vectorVB->Bind();
