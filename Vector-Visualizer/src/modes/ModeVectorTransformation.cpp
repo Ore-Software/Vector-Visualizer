@@ -60,6 +60,29 @@ namespace displayMode
             UpdateTransformedVector();
         }
 
+        ImGui::Spacing();
+        ImGui::Separator();
+
+        ImGui::Text("Initial Vector");
+        ImGui::SliderFloat3("Origin", &m_Vectors->at(0).m_Origin.x, -10.0f, 10.0f);
+        ImGui::SliderFloat3("Direction", &m_Vectors->at(0).m_Direction.x, -10.0f, 10.0f);
+        ImGui::ColorEdit4("Color", &m_Vectors->at(0).m_Color.x);
+        if (ImGui::Button("Update Initial Vector"))
+        {
+            EditVectorBufferData(*m_VectorBuffer, *m_Vectors, 0);
+            UpdateTransformedVector();
+
+            m_VectorVA->Bind();
+            m_VectorVB->Bind();
+            glBufferData(GL_ARRAY_BUFFER, sizeof(float) * m_VectorBuffer->size(), m_VectorBuffer->data(), GL_DYNAMIC_DRAW);
+        };
+
+        ImGui::Spacing();
+
+        ImGui::Text("Transformed Vector");
+        ImGui::Text("Origin: %f %f %f", m_Vectors->at(1).m_Origin.x, m_Vectors->at(1).m_Origin.y, m_Vectors->at(1).m_Origin.z);
+        ImGui::Text("Direction: %f %f %f", m_Vectors->at(1).m_Direction.x, m_Vectors->at(1).m_Direction.y, m_Vectors->at(1).m_Direction.z);
+
         ImGui::End();
     }
 
