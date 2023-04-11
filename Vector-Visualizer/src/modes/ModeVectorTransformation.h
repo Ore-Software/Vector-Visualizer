@@ -16,11 +16,5 @@ namespace displayMode
 		void OnUpdate(float deltaTime) override;
 		void OnRender() override;
 		void OnImGuiRender() override;
-
-	private:
-		std::shared_ptr<std::vector<VectorObject>> m_Vectors;
-		std::shared_ptr<std::vector<float>> m_VectorBuffer;
-		std::shared_ptr<VertexArray> m_VectorVA;
-		std::shared_ptr<VertexBuffer> m_VectorVB;
 	};
 }
