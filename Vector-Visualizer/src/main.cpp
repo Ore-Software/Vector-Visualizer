@@ -19,6 +19,7 @@
 
 #include "modes/ModeVectorMultiple.h"
 #include "modes/ModeVectorTransformation.h"
+#include "modes/ModeBrownian.h"
 
 int main()
 {
@@ -148,6 +149,7 @@ int main()
     // fixed, but now need to clean up pointers/objects in ModeVectorMultiple.cpp
     modeMenu->RegisterMode<displayMode::ModeVectorMultiple>(vectors, vectorBuffer, vectorVA, vectorVB, "Multiple Vectors");
     //modeMenu->RegisterMode<displayMode::ModeVectorTransformation>(&vectors, &vectorBuffer, &vectorVA, &vectorVB, "Matrix Transformation");
+    modeMenu->RegisterMode<displayMode::ModeBrownian>(vectors, vectorBuffer, vectorVA, vectorVB, "Brownian Motion");
 
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(windowID))
@@ -262,7 +264,7 @@ int main()
                 ImGui::Begin("Vector Controls");
                 ImGui::Text("Vector");
                 ImGui::SliderFloat3("Origin", &(*vectors)[0].m_Origin.x, -10.0f, 10.0f);
-                ImGui::SliderFloat3("Direction", &(*vectors)[0].m_Direction.x, -10.0f, 10.0f);
+                ImGui::SliderFloat3("Direction", &(*vectors)[0].m_EndPoint.x, -10.0f, 10.0f); // since origin is (0,0,0), endpoint is direction
                 ImGui::ColorEdit4("Color", &(*vectors)[0].m_Color.x);
                 if (ImGui::Button("Apply Changes"))
                 {

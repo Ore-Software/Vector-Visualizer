@@ -51,7 +51,7 @@ namespace displayMode
             ImGui::PushID(j);
             ImGui::Text("Vector %d", j + 1);
             ImGui::SliderFloat3("Origin", &(*m_Vectors)[j].m_Origin.x, -10.0f, 10.0f);
-            ImGui::SliderFloat3("Direction", &(*m_Vectors)[j].m_Direction.x, -10.0f, 10.0f);
+            ImGui::SliderFloat3("Direction", &(*m_Vectors)[j].m_EndPoint.x, -10.0f, 10.0f); // since origin is (0,0,0), endpoint is direction
             ImGui::ColorEdit4("Color", &(*m_Vectors)[j].m_Color.x);
             if (ImGui::Button("Apply Changes"))
             {
