@@ -16,13 +16,12 @@ namespace displayMode
         m_VectorVA = vectorVA;
         m_VectorVB = vectorVB;
 
-        m_Translate = glm::vec3(0.0f);
-        m_RotateAxis = glm::vec3(1.0f, 0.0f, 0.0f);
-        m_RotateAngle = 0.0f;
-        m_Scale = glm::vec3(1.0f);
+        if (m_Vectors->size() == 1)
+        {
+            m_Vectors->push_back(m_Vectors->at(0));
+            AddVectorBufferData(*m_VectorBuffer, m_Vectors->at(0));
+        }
 
-        m_Vectors->push_back(m_Vectors->at(0));
-        AddVectorBufferData(*m_VectorBuffer, m_Vectors->at(0));
         CalculateMatrix();
     }
 
@@ -44,14 +43,14 @@ namespace displayMode
         ImGui::Begin("Matrix Transformation");
         ImGui::Text("Matrix entries");
         ImGui::SliderFloat3("Translate", &m_Translate.x, -10.0f, 10.0f);
-        ImGui::SliderFloat3("Rotation Axis", &m_RotateAxis.x, -10.0f, 10.0f);
+        ImGui::SliderFloat3("Rotation Axis", &m_RotateAxis.x, -1.0f, 1.0f);
         ImGui::SliderFloat("Rotation Angle", &m_RotateAngle, 0.0f, 360.0f);
         ImGui::SliderFloat3("Scale", &m_Scale.x, -10.0f, 10.0f);
 
         ImGui::Text("Transform Matrix");
         for (int i = 0; i < 4; i++)
         {
-            ImGui::Text("%f %f %f %f", m_Transform[0][i], m_Transform[1][i], m_Transform[2][i], m_Transform[3][i]);
+            ImGui::Text("%f %f %f %f", m_Transform[0][i], m_Transform[1][i], m_Transform[2][i], m_Transform[3][i]); // transposed
         }
 
         if (ImGui::Button("Update Matrix"))
@@ -99,7 +98,7 @@ namespace displayMode
     void ModeVectorTransformation::UpdateTransformedVector()
     {
         VectorObject transformedVector;
-        transformedVector.m_Origin = m_Transform * glm::vec4(m_Vectors->at(0).m_Origin, 1.0f);
+        transformedVector.m_Origin = glm::vec4(m_Vectors->at(0).m_Origin, 1.0f);
         transformedVector.m_Direction = m_Transform * glm::vec4(m_Vectors->at(0).m_Direction, 1.0f);
 
         m_Vectors->at(1) = transformedVector;
