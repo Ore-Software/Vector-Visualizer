@@ -16,5 +16,16 @@ namespace displayMode
 		void OnUpdate(float deltaTime) override;
 		void OnRender() override;
 		void OnImGuiRender() override;
+
+	private:
+		void CalculateMatrix();
+		void UpdateTransformedVector();
+
+	private:
+		glm::vec3 m_Translate;
+		glm::vec3 m_RotateAxis;
+		float m_RotateAngle;
+		glm::vec3 m_Scale;
+		glm::mat4 m_Transform;
 	};
 }

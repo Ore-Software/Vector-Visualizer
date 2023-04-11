@@ -120,14 +120,6 @@ int main()
     // bind vertex buffer to vertex array
     vectorTransformVA->AddBuffer(*vectorTransformVB, layout);
 
-    // transformation matrix
-    float transMatrix[]
-    {
-        1.0f,  0.0f, 0.0f, // row 1
-        0.0f,  1.0f, 0.0f, // row 2
-        0.0f,  0.0f, 1.0f, // row 3
-    };
-
     // shaders
     std::string vertexFilepath = "res/shaders/vertex.shader";
     std::string fragmentFilepath = "res/shaders/fragment.shader";
@@ -277,7 +269,7 @@ int main()
 
         modeMenu->m_CurrentMode->m_VectorVA->Bind();
         shader.Bind();
-        glDrawArrays(GL_LINES, 0, 2 * vectorMultiple->size());
+        glDrawArrays(GL_LINES, 0, 2 * modeMenu->m_CurrentMode->m_VectorBuffer->size());
 
         // imgui new frame
         ImGui_ImplOpenGL3_NewFrame();
