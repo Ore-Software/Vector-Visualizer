@@ -17,6 +17,7 @@
 #include "renderer/Shader.h"
 #include "renderer/Camera.h"
 
+#include "modes/ModeMenu.h"
 #include "modes/ModeVectorMultiple.h"
 #include "modes/ModeVectorTransformation.h"
 #include "modes/ModeBrownian.h"
@@ -66,32 +67,51 @@ int main()
     // bind vertex buffer to vertex array
     axesVA.AddBuffer(axesVB, layout);
 
-    // vector setup
-    VectorObject vector1(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(3.0f, 4.0f, -5.0f), glm::vec4(1.0f, 0.0f, 1.0f, 1.0f));
-    //VectorObject vector3();
+    // vectorMenu setup
+    std::shared_ptr<std::vector<VectorObject>> vectorMenu(new std::vector<VectorObject>);
 
-    std::shared_ptr<std::vector<VectorObject>> vectors(new std::vector<VectorObject>);
-    vectors->push_back(vector1);
+    std::shared_ptr<std::vector<float>> vectorMenuBuffer(new std::vector<float>);
 
-    std::shared_ptr<std::vector<float>> vectorBuffer(new std::vector<float>);
+    std::shared_ptr<VertexArray> vectorMenuVA(new VertexArray);
+    std::shared_ptr<VertexBuffer> vectorMenuVB(new VertexBuffer(vectorMenuBuffer->data(), sizeof(float) * vectorMenuBuffer->size(), MODE::DYNAMIC));
+    // bind vertex buffer to vertex array
+    vectorMenuVA->AddBuffer(*vectorMenuVB, layout);
 
-    for (VectorObject vec : *vectors)
+    // vectorMultiple setup
+    VectorObject vectorMultiple1(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(3.0f, 4.0f, -5.0f), glm::vec4(1.0f, 0.0f, 1.0f, 1.0f));
+
+    std::shared_ptr<std::vector<VectorObject>> vectorMultiple(new std::vector<VectorObject>);
+    vectorMultiple->push_back(vectorMultiple1);
+
+    std::shared_ptr<std::vector<float>> vectorMultipleBuffer(new std::vector<float>);
+
+    for (VectorObject vec : *vectorMultiple)
     {
-        AddVectorBufferData(*vectorBuffer, vec);
+        AddVectorBufferData(*vectorMultipleBuffer, vec);
     }
 
-    std::shared_ptr<VertexArray> vectorVA(new VertexArray);
-    std::shared_ptr<VertexBuffer> vectorVB(new VertexBuffer(vectorBuffer->data(), sizeof(float) * vectorBuffer->size(), MODE::DYNAMIC));
+    std::shared_ptr<VertexArray> vectorMultipleVA(new VertexArray);
+    std::shared_ptr<VertexBuffer> vectorMultipleVB(new VertexBuffer(vectorMultipleBuffer->data(), sizeof(float) * vectorMultipleBuffer->size(), MODE::DYNAMIC));
     // bind vertex buffer to vertex array
-    vectorVA->AddBuffer(*vectorVB, layout);
+    vectorMultipleVA->AddBuffer(*vectorMultipleVB, layout);
 
-    // transformation matrix
-    float transMatrix[]
+    // vectorTransform setup
+    VectorObject vectorTransform1(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(3.0f, 4.0f, -5.0f), glm::vec4(1.0f, 0.0f, 1.0f, 1.0f));
+
+    std::shared_ptr<std::vector<VectorObject>> vectorTransform(new std::vector<VectorObject>);
+    vectorTransform->push_back(vectorTransform1);
+
+    std::shared_ptr<std::vector<float>> vectorTransformBuffer(new std::vector<float>);
+
+    for (VectorObject vec : *vectorTransform)
     {
-        1.0f,  0.0f, 0.0f, // row 1
-        0.0f,  1.0f, 0.0f, // row 2
-        0.0f,  0.0f, 1.0f, // row 3
-    };
+        AddVectorBufferData(*vectorTransformBuffer, vec);
+    }
+
+    std::shared_ptr<VertexArray> vectorTransformVA(new VertexArray);
+    std::shared_ptr<VertexBuffer> vectorTransformVB(new VertexBuffer(vectorTransformBuffer->data(), sizeof(float) * vectorTransformBuffer->size(), MODE::DYNAMIC));
+    // bind vertex buffer to vertex array
+    vectorTransformVA->AddBuffer(*vectorTransformVB, layout);
 
     // shaders
     std::string vertexFilepath = "res/shaders/vertex.shader";
@@ -141,14 +161,12 @@ int main()
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();
 
-    displayMode::Mode* currentMode = nullptr;
-    displayMode::ModeMenu* modeMenu = new displayMode::ModeMenu(currentMode);
-    currentMode = modeMenu;
+    displayMode::ModeMenu* modeMenu = new displayMode::ModeMenu(nullptr, vectorMenu, vectorMenuBuffer, vectorMenuVA, vectorMenuVB);
+    modeMenu->m_CurrentMode = modeMenu;
 
-    // TODO: correctly register (vectors, vectorBuffer, vectorVA, vectorVB) to mode, so that we are able to modify it in the render loop
-    // fixed, but now need to clean up pointers/objects in ModeVectorMultiple.cpp
-    modeMenu->RegisterMode<displayMode::ModeVectorMultiple>(vectors, vectorBuffer, vectorVA, vectorVB, "Multiple Vectors");
-    //modeMenu->RegisterMode<displayMode::ModeVectorTransformation>(&vectors, &vectorBuffer, &vectorVA, &vectorVB, "Matrix Transformation");
+    // register different modes with respective (vectors, vectorBuffer, vectorVA, vectorVB)
+    modeMenu->RegisterMode<displayMode::ModeVectorMultiple>(vectorMultiple, vectorMultipleBuffer, vectorMultipleVA, vectorMultipleVB, "Multiple Vectors");
+    modeMenu->RegisterMode<displayMode::ModeVectorTransformation>(vectorTransform, vectorTransformBuffer, vectorTransformVA, vectorTransformVB, "Matrix Transformation");
     modeMenu->RegisterMode<displayMode::ModeBrownian>(vectors, vectorBuffer, vectorVA, vectorVB, "Brownian Motion");
 
     /* Loop until the user closes the window */
@@ -243,9 +261,9 @@ int main()
         shader.Bind();
         glDrawArrays(GL_LINES, 0, 2 * 6);
 
-        vectorVA->Bind();
+        modeMenu->m_CurrentMode->m_VectorVA->Bind();
         shader.Bind();
-        glDrawArrays(GL_LINES, 0, 2 * vectors->size());
+        glDrawArrays(GL_LINES, 0, 2 * modeMenu->m_CurrentMode->m_VectorBuffer->size());
 
         // imgui new frame
         ImGui_ImplOpenGL3_NewFrame();
@@ -253,39 +271,16 @@ int main()
         ImGui::NewFrame();
 
         // mode switching
-        if (currentMode)
+        modeMenu->m_CurrentMode->OnUpdate(0.0f);
+        modeMenu->m_CurrentMode->OnRender();
+        ImGui::Begin("Modes");
+        if (modeMenu->m_CurrentMode != modeMenu && ImGui::Button("<- Back to mode selection"))
         {
-            currentMode->OnUpdate(0.0f);
-            currentMode->OnRender();
-            ImGui::Begin("Modes");
-            if (currentMode == modeMenu)
-            {
-                // imgui vector controls
-                ImGui::Begin("Vector Controls");
-                ImGui::Text("Vector");
-                ImGui::SliderFloat3("Origin", &(*vectors)[0].m_Origin.x, -10.0f, 10.0f);
-                ImGui::SliderFloat3("Direction", &(*vectors)[0].m_EndPoint.x, -10.0f, 10.0f); // since origin is (0,0,0), endpoint is direction
-                ImGui::ColorEdit4("Color", &(*vectors)[0].m_Color.x);
-                if (ImGui::Button("Apply Changes"))
-                {
-                    EditVectorBufferData(*vectorBuffer, *vectors, 0);
-
-                    vectorVA->Bind();
-                    vectorVB->Bind();
-                    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vectorBuffer->size(), vectorBuffer->data(), GL_DYNAMIC_DRAW);
-                };
-                ImGui::Spacing();
-                ImGui::Separator();
-                ImGui::End();
-            }
-            else if (currentMode != modeMenu && ImGui::Button("<- Back to mode selection"))
-            {
-                delete currentMode;
-                currentMode = modeMenu;
-            }
-            currentMode->OnImGuiRender();
-            ImGui::End();
+            delete modeMenu->m_CurrentMode;
+            modeMenu->m_CurrentMode = modeMenu;
         }
+        modeMenu->m_CurrentMode->OnImGuiRender();
+        ImGui::End();
 
         ImGui::EndFrame();
         ImGui::Render();
@@ -298,11 +293,7 @@ int main()
         glfwPollEvents();
     }
     // mode clean up
-    delete currentMode;
-    if (currentMode != modeMenu)
-    {
-        delete modeMenu;
-    }
+    delete modeMenu->m_CurrentMode;
 
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
@@ -310,4 +301,3 @@ int main()
     window.~Window();
     return 0;
 }
-
