@@ -151,6 +151,7 @@
     <ClCompile Include="src\external\imgui\imgui_widgets.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\modes\ModeMenu.cpp" />
+    <ClCompile Include="src\modes\ModeBrownian.cpp" />
     <ClCompile Include="src\modes\ModeVectorMultiple.cpp" />
     <ClCompile Include="src\modes\ModeVectorTransformation.cpp" />
     <ClCompile Include="src\renderer\Camera.cpp" />
@@ -458,6 +459,7 @@
     <ClInclude Include="src\external\imgui\imstb_truetype.h" />
     <ClInclude Include="src\modes\Mode.h" />
     <ClInclude Include="src\modes\ModeMenu.h" />
+    <ClInclude Include="src\modes\ModeBrownian.h" />
     <ClInclude Include="src\modes\ModeVectorMultiple.h" />
     <ClInclude Include="src\modes\ModeVectorTransformation.h" />
     <ClInclude Include="src\renderer\Camera.h" />

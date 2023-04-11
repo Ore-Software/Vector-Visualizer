@@ -20,6 +20,7 @@
 #include "modes/ModeMenu.h"
 #include "modes/ModeVectorMultiple.h"
 #include "modes/ModeVectorTransformation.h"
+#include "modes/ModeBrownian.h"
 
 int main()
 {
@@ -166,6 +167,7 @@ int main()
     // register different modes with respective (vectors, vectorBuffer, vectorVA, vectorVB)
     modeMenu->RegisterMode<displayMode::ModeVectorMultiple>(vectorMultiple, vectorMultipleBuffer, vectorMultipleVA, vectorMultipleVB, "Multiple Vectors");
     modeMenu->RegisterMode<displayMode::ModeVectorTransformation>(vectorTransform, vectorTransformBuffer, vectorTransformVA, vectorTransformVB, "Matrix Transformation");
+    modeMenu->RegisterMode<displayMode::ModeBrownian>(vectors, vectorBuffer, vectorVA, vectorVB, "Brownian Motion");
 
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(windowID))

@@ -19,6 +19,22 @@ namespace displayMode
 
     ModeVectorMultiple::~ModeVectorMultiple()
     {
+        // remove all but vector #1
+        VectorObject first = m_Vectors->front();
+        m_Vectors->clear();
+        m_Vectors->push_back(first);
+
+        // reconstruct buffer of vector vertices
+        m_VectorBuffer->clear();
+        for (VectorObject vec : *m_Vectors)
+        {
+            AddVectorBufferData(*m_VectorBuffer, vec);
+        }
+
+        // redraw vectors
+        m_VectorVA->Bind();
+        m_VectorVB->Bind();
+        glBufferData(GL_ARRAY_BUFFER, sizeof(float) * m_VectorBuffer->size(), m_VectorBuffer->data(), GL_DYNAMIC_DRAW);
     }
 
     void ModeVectorMultiple::OnUpdate(float deltaTime)
@@ -38,7 +54,7 @@ namespace displayMode
             ImGui::PushID(j);
             ImGui::Text("Vector %d", j + 1);
             ImGui::SliderFloat3("Origin", &(*m_Vectors)[j].m_Origin.x, -10.0f, 10.0f);
-            ImGui::SliderFloat3("Direction", &(*m_Vectors)[j].m_Direction.x, -10.0f, 10.0f);
+            ImGui::SliderFloat3("Direction", &(*m_Vectors)[j].m_EndPoint.x, -10.0f, 10.0f); // since origin is (0,0,0), endpoint is direction
             ImGui::ColorEdit4("Color", &(*m_Vectors)[j].m_Color.x);
             if (ImGui::Button("Apply Changes"))
             {
