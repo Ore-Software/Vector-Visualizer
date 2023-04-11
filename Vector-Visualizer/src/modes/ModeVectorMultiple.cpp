@@ -16,6 +16,22 @@ namespace displayMode
 
     ModeVectorMultiple::~ModeVectorMultiple()
     {
+        // remove all but vector #1
+        VectorObject first = m_Vectors->front();
+        m_Vectors->clear();
+        m_Vectors->push_back(first);
+
+        // reconstruct buffer of vector vertices
+        m_VectorBuffer->clear();
+        for (VectorObject vec : *m_Vectors)
+        {
+            AddVectorBufferData(*m_VectorBuffer, vec);
+        }
+
+        // redraw vectors
+        m_VectorVA->Bind();
+        m_VectorVB->Bind();
+        glBufferData(GL_ARRAY_BUFFER, sizeof(float) * m_VectorBuffer->size(), m_VectorBuffer->data(), GL_DYNAMIC_DRAW);
     }
 
     void ModeVectorMultiple::OnUpdate(float deltaTime)
