@@ -26,12 +26,6 @@ namespace displayMode
 		int m_Steps;
 		glm::vec3 m_LastPos;
 		glm::vec3 m_RandDir;
-
-		VectorObject m_OriginalVec;
-		std::shared_ptr<std::vector<VectorObject>> m_Vectors;
-		std::shared_ptr<std::vector<float>> m_VectorBuffer;
-		std::shared_ptr<VertexArray> m_VectorVA;
-		std::shared_ptr<VertexBuffer> m_VectorVB;
 	};
 
 }

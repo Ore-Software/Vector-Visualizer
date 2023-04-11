@@ -1,14 +1,7 @@
 #include "ModeVectorTransformation.h"
 
-#include "../external/glm/glm.hpp"
-#include "../external/glm/gtc/matrix_transform.hpp"
-
 namespace displayMode
 {
-    ModeVectorTransformation::ModeVectorTransformation()
-    {
-    }
-
     ModeVectorTransformation::ModeVectorTransformation(std::shared_ptr<std::vector<VectorObject>> vectors, std::shared_ptr<std::vector<float>> vectorBuffer, std::shared_ptr<VertexArray> vectorVA, std::shared_ptr<VertexBuffer> vectorVB)
     {
         m_Vectors = vectors;

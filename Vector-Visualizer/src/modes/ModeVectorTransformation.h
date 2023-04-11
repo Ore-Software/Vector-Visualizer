@@ -4,12 +4,14 @@
 
 #include "glad/glad.h"
 
+#include "../external/glm/glm.hpp"
+#include "../external/glm/gtc/matrix_transform.hpp"
+
 namespace displayMode 
 {
 	class ModeVectorTransformation : public Mode
 	{
 	public:
-		ModeVectorTransformation();
 		ModeVectorTransformation(std::shared_ptr<std::vector<VectorObject>> vectors, std::shared_ptr<std::vector<float>> vectorBuffer, std::shared_ptr<VertexArray> vectorVA, std::shared_ptr<VertexBuffer> vectorVB);
 		~ModeVectorTransformation();
 

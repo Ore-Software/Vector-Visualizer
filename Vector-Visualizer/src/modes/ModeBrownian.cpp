@@ -1,39 +1,18 @@
 #include "ModeBrownian.h"
 
-#include "../external/glm/glm.hpp"
-#include "../external/glm/gtc/matrix_transform.hpp"
-
 namespace displayMode
 {
     ModeBrownian::ModeBrownian(std::shared_ptr<std::vector<VectorObject>> vectors, std::shared_ptr<std::vector<float>> vectorBuffer, std::shared_ptr<VertexArray> vectorVA, std::shared_ptr<VertexBuffer> vectorVB)
-        :m_Vectors(vectors), m_VectorBuffer(vectorBuffer), m_VectorVA(vectorVA), m_VectorVB(vectorVB), m_Steps(1)
+        : m_Steps(1)
     {
-        // store vector 
-        m_OriginalVec = m_Vectors->front();
-
-        // clear scene
-        m_Vectors->clear();
-        m_VectorBuffer->clear();
-
-        // redraw vectors
-        Redraw();
+        m_Vectors = vectors;
+        m_VectorBuffer = vectorBuffer;
+        m_VectorVA = vectorVA;
+        m_VectorVB = vectorVB;
     }
 
     ModeBrownian::~ModeBrownian()
     {
-        // remove generated vectors and restore original view by putting back original vector
-        m_Vectors->clear();
-        m_Vectors->push_back(m_OriginalVec);
-
-        // reconstruct buffer of vector vertices
-        m_VectorBuffer->clear();
-        for (VectorObject vec : *m_Vectors)
-        {
-            AddVectorBufferData(*m_VectorBuffer, vec);
-        }
-
-        // redraw vectors
-        Redraw();
     }
 
     void ModeBrownian::Redraw()
@@ -64,7 +43,7 @@ namespace displayMode
             if (m_Vectors->empty())
                 m_LastPos = { 0, 0, 0 };
             else
-                m_LastPos = m_Vectors->back().m_EndPoint; 
+                m_LastPos = m_Vectors->back().GetEndPoint(); 
 
             for (int j = 0; j < m_Steps; j++)
             {

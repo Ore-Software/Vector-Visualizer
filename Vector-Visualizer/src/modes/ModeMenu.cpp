@@ -1,4 +1,3 @@
-#include "Mode.h"
 #include "ModeMenu.h"
 
 namespace displayMode

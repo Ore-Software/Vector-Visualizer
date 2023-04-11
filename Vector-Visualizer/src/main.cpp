@@ -113,6 +113,16 @@ int main()
     // bind vertex buffer to vertex array
     vectorTransformVA->AddBuffer(*vectorTransformVB, layout);
 
+    // Brownian Motion setup
+    std::shared_ptr<std::vector<VectorObject>> vectorBrown(new std::vector<VectorObject>);
+
+    std::shared_ptr<std::vector<float>> vectorBrownBuffer(new std::vector<float>);
+
+    std::shared_ptr<VertexArray> vectorBrownVA(new VertexArray);
+    std::shared_ptr<VertexBuffer> vectorBrownVB(new VertexBuffer(vectorMultipleBuffer->data(), sizeof(float) * vectorMultipleBuffer->size(), MODE::DYNAMIC));
+    // bind vertex buffer to vertex array
+    vectorBrownVA->AddBuffer(*vectorBrownVB, layout);
+
     // shaders
     std::string vertexFilepath = "res/shaders/vertex.shader";
     std::string fragmentFilepath = "res/shaders/fragment.shader";
@@ -167,7 +177,7 @@ int main()
     // register different modes with respective (vectors, vectorBuffer, vectorVA, vectorVB)
     modeMenu->RegisterMode<displayMode::ModeVectorMultiple>(vectorMultiple, vectorMultipleBuffer, vectorMultipleVA, vectorMultipleVB, "Multiple Vectors");
     modeMenu->RegisterMode<displayMode::ModeVectorTransformation>(vectorTransform, vectorTransformBuffer, vectorTransformVA, vectorTransformVB, "Matrix Transformation");
-    modeMenu->RegisterMode<displayMode::ModeBrownian>(vectors, vectorBuffer, vectorVA, vectorVB, "Brownian Motion");
+    modeMenu->RegisterMode<displayMode::ModeBrownian>(vectorBrown, vectorBrownBuffer, vectorBrownVA, vectorBrownVB, "Brownian Motion");
 
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(windowID))
