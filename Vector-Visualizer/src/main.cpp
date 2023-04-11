@@ -67,17 +67,9 @@ int main()
     axesVA.AddBuffer(axesVB, layout);
 
     // vectorMenu setup
-    VectorObject vectorMenu1(glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(3.0f, 4.0f, -5.0f), glm::vec4(1.0f, 0.0f, 1.0f, 1.0f));
-
     std::shared_ptr<std::vector<VectorObject>> vectorMenu(new std::vector<VectorObject>);
-    vectorMenu->push_back(vectorMenu1);
 
     std::shared_ptr<std::vector<float>> vectorMenuBuffer(new std::vector<float>);
-
-    for (VectorObject vec : *vectorMenu)
-    {
-        AddVectorBufferData(*vectorMenuBuffer, vec);
-    }
 
     std::shared_ptr<VertexArray> vectorMenuVA(new VertexArray);
     std::shared_ptr<VertexBuffer> vectorMenuVB(new VertexBuffer(vectorMenuBuffer->data(), sizeof(float) * vectorMenuBuffer->size(), MODE::DYNAMIC));
