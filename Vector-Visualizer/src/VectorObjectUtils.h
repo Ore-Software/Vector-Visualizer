@@ -14,9 +14,9 @@ inline void AddVectorBufferData(std::vector<float>& buffer, VectorObject vectorO
     buffer.push_back(vectorObject.m_Color.z);
     buffer.push_back(vectorObject.m_Color.w);
 
-    buffer.push_back(vectorObject.m_Direction.x);
-    buffer.push_back(vectorObject.m_Direction.y);
-    buffer.push_back(vectorObject.m_Direction.z);
+    buffer.push_back(vectorObject.m_EndPoint.x);
+    buffer.push_back(vectorObject.m_EndPoint.y);
+    buffer.push_back(vectorObject.m_EndPoint.z);
 
     buffer.push_back(vectorObject.m_Color.x);
     buffer.push_back(vectorObject.m_Color.y);
@@ -35,9 +35,9 @@ inline void EditVectorBufferData(std::vector<float>& buffer, const std::vector<V
     buffer[14 * index + 5] = vectorObjects[index].m_Color.z;
     buffer[14 * index + 6] = vectorObjects[index].m_Color.w;
 
-    buffer[14 * index + 7] = vectorObjects[index].m_Direction.x;
-    buffer[14 * index + 8] = vectorObjects[index].m_Direction.y;
-    buffer[14 * index + 9] = vectorObjects[index].m_Direction.z;
+    buffer[14 * index + 7] = vectorObjects[index].m_EndPoint.x;
+    buffer[14 * index + 8] = vectorObjects[index].m_EndPoint.y;
+    buffer[14 * index + 9] = vectorObjects[index].m_EndPoint.z;
 
     buffer[14 * index + 10] = vectorObjects[index].m_Color.x;
     buffer[14 * index + 11] = vectorObjects[index].m_Color.y;
