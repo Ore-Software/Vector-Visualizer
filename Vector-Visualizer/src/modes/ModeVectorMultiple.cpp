@@ -37,9 +37,8 @@ namespace displayMode
             {
                 EditVectorBufferData(*m_VectorBuffer, *m_Vectors, j);
 
-                m_VectorVA->Bind();
-                m_VectorVB->Bind();
-                glBufferData(GL_ARRAY_BUFFER, sizeof(float) * m_VectorBuffer->size(), m_VectorBuffer->data(), GL_DYNAMIC_DRAW);
+                // redraw vectors
+                Redraw();
             };
 
             if (ImGui::Button("Remove vector"))
@@ -53,9 +52,8 @@ namespace displayMode
                     AddVectorBufferData(*m_VectorBuffer, vec);
                 }
 
-                m_VectorVA->Bind();
-                m_VectorVB->Bind();
-                glBufferData(GL_ARRAY_BUFFER, sizeof(float) * m_VectorBuffer->size(), m_VectorBuffer->data(), GL_DYNAMIC_DRAW);
+                // redraw vectors
+                Redraw();
             }
 
             ImGui::Spacing();
@@ -68,9 +66,8 @@ namespace displayMode
             m_Vectors->push_back(newVec);
             AddVectorBufferData(*m_VectorBuffer, newVec);
 
-            m_VectorVA->Bind();
-            m_VectorVB->Bind();
-            glBufferData(GL_ARRAY_BUFFER, sizeof(float) * m_VectorBuffer->size(), m_VectorBuffer->data(), GL_DYNAMIC_DRAW);
+            // redraw vectors
+            Redraw();
         }
         ImGui::End();
     }

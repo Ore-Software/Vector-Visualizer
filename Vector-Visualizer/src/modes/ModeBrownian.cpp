@@ -15,13 +15,6 @@ namespace displayMode
     {
     }
 
-    void ModeBrownian::Redraw()
-    {
-        m_VectorVA->Bind();
-        m_VectorVB->Bind();
-        glBufferData(GL_ARRAY_BUFFER, sizeof(float) * m_VectorBuffer->size(), m_VectorBuffer->data(), GL_DYNAMIC_DRAW);
-    }
-
     void ModeBrownian::OnUpdate(float deltaTime)
     {
     }

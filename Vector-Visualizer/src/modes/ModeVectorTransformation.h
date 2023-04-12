@@ -24,10 +24,10 @@ namespace displayMode
 		void UpdateTransformedVector();
 
 	private:
-		glm::vec3 m_Translate = glm::vec3(0.0f);
-		glm::vec3 m_RotateAxis = glm::vec3(1.0f, 0.0f, 0.0f);
-		float m_RotateAngle = 0.0f;
-		glm::vec3 m_Scale = glm::vec3(1.0f);
+		glm::vec3 m_Translate;
+		glm::vec3 m_RotateAxis;
+		float m_RotateAngle;
+		glm::vec3 m_Scale;
 		glm::mat4 m_Transform;
 	};
 }

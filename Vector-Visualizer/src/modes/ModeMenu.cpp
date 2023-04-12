@@ -20,7 +20,7 @@ namespace displayMode
 		for (auto& mode : m_Modes)
 		{
 			if (ImGui::Button(mode.first.c_str()))
-				m_CurrentMode = mode.second();
+				m_CurrentMode = mode.second;
 		}
 	}
 }

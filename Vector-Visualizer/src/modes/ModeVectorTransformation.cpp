@@ -9,11 +9,14 @@ namespace displayMode
         m_VectorVA = vectorVA;
         m_VectorVB = vectorVB;
 
-        if (m_Vectors->size() == 1)
-        {
-            m_Vectors->push_back(m_Vectors->at(0));
-            AddVectorBufferData(*m_VectorBuffer, m_Vectors->at(0));
-        }
+        m_Translate = glm::vec3(0.0f);
+        m_RotateAxis = glm::vec3(1.0f, 0.0f, 0.0f);
+        m_RotateAngle = 0.0f;
+        m_Scale = glm::vec3(1.0f);
+
+        // when it is initialized it will have 1 vector, and we will add a deep copy of it and transform the copy
+        m_Vectors->push_back(m_Vectors->at(0));
+        AddVectorBufferData(*m_VectorBuffer, m_Vectors->at(0));
 
         CalculateMatrix();
     }
@@ -64,9 +67,8 @@ namespace displayMode
             EditVectorBufferData(*m_VectorBuffer, *m_Vectors, 0);
             UpdateTransformedVector();
 
-            m_VectorVA->Bind();
-            m_VectorVB->Bind();
-            glBufferData(GL_ARRAY_BUFFER, sizeof(float) * m_VectorBuffer->size(), m_VectorBuffer->data(), GL_DYNAMIC_DRAW);
+            // redraw vectors
+            Redraw();
         };
 
         ImGui::Spacing();
@@ -97,9 +99,8 @@ namespace displayMode
         m_Vectors->at(1) = transformedVector;
         EditVectorBufferData(*m_VectorBuffer, *m_Vectors, 1);
 
-        m_VectorVA->Bind();
-        m_VectorVB->Bind();
-        glBufferData(GL_ARRAY_BUFFER, sizeof(float) * m_VectorBuffer->size(), m_VectorBuffer->data(), GL_DYNAMIC_DRAW);
+        // redraw vectors
+        Redraw();
     }
 
 }
