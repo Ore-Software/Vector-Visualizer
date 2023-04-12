@@ -60,9 +60,6 @@
     <ClCompile Include="src\external\imgui\imgui_widgets.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\modes\Mode.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\modes\ModeVectorMultiple.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -70,6 +67,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\modes\ModeBrownian.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\modes\ModeMenu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -989,10 +989,13 @@
     <ClInclude Include="src\modes\ModeVectorTransformation.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\VectorObjectUtils.h">
+    <ClInclude Include="src\BufferUtils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\modes\ModeBrownian.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\modes\ModeMenu.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

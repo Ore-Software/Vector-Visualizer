@@ -34,7 +34,7 @@ namespace displayMode
             ImGui::SliderFloat3("Direction", &(*m_Vectors)[j].m_Direction.x, -10.0f, 10.0f); // since origin is (0,0,0), endpoint is direction
             ImGui::ColorEdit4("Color", &(*m_Vectors)[j].m_Color.x);
             
-            EditVectorBufferData(*m_VectorBuffer, *m_Vectors, j);    
+            EditVectorBufferLineData(*m_VectorBuffer, *m_Vectors, j);    
 
             if (ImGui::Button("Remove vector"))
             {
@@ -44,7 +44,7 @@ namespace displayMode
                 m_VectorBuffer->clear();
                 for (VectorObject vec : *m_Vectors)
                 {
-                    AddVectorBufferData(*m_VectorBuffer, vec);
+                    AddVectorBufferLineData(*m_VectorBuffer, vec);
                 }
             }
 
@@ -56,7 +56,7 @@ namespace displayMode
         {
             VectorObject newVec(glm::vec3(0.0f, 0.0f, 0.0f), glm::ballRand(5.0f), glm::vec4(glm::abs(glm::ballRand(1.0f)), 1.0f)); // uses random vector direction and random color
             m_Vectors->push_back(newVec);
-            AddVectorBufferData(*m_VectorBuffer, newVec);
+            AddVectorBufferLineData(*m_VectorBuffer, newVec);
         }
 
         ImGui::End();

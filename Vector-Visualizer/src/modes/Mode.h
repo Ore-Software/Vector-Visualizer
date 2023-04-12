@@ -8,7 +8,7 @@
 #include "../external/imgui/imgui.h"
 
 #include "../VectorObject.h"
-#include "../VectorObjectUtils.h"
+#include "../BufferUtils.h"
 #include "../renderer/VertexBuffer.h"
 #include "../renderer/VertexArray.h"
 

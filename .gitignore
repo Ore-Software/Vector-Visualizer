@@ -32,7 +32,6 @@ bld/
 [Ll]og/
 [Ll]ogs/
 [Ii]ntermediates/
-[Dd]ependencies/
 
 # Visual Studio 2015/2017 cache/options directory
 .vs/
@@ -207,7 +206,6 @@ MigrationBackup/
 *.lai
 *.la
 *.a
-*.lib
 
 # Executables
 *.exe

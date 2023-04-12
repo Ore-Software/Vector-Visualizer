@@ -59,7 +59,7 @@ namespace displayMode
             m_RandDir = glm::ballRand(1.0f);
             VectorObject newVec(m_LastPos, m_RandDir, glm::vec4(glm::abs(glm::ballRand(1.0f)), 1.0f)); // uses random vector direction and random color
             m_Vectors->push_back(newVec);
-            AddVectorBufferData(*m_VectorBuffer, newVec);
+            AddVectorBufferLineData(*m_VectorBuffer, newVec);
 
             m_LastPos += m_RandDir; // update lastPos for next iteration
 
