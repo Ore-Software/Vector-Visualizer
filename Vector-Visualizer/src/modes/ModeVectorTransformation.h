@@ -38,6 +38,8 @@ namespace displayMode
 		std::vector<unsigned int> m_Indices;
 		VertexBufferLayout m_VertexLayout;
 
+		std::vector<glm::vec3> m_TriangleVertices;
+		std::vector<glm::vec4> m_TriangleColors;
 		bool m_ShowParallelepiped = false;
 	};
 }

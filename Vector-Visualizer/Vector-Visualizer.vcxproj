@@ -468,7 +468,7 @@
     <ClInclude Include="src\renderer\VertexArray.h" />
     <ClInclude Include="src\renderer\VertexBufferLayout.h" />
     <ClInclude Include="src\renderer\VertexBuffer.h" />
-    <ClInclude Include="src\VectorObjectUtils.h" />
+    <ClInclude Include="src\BufferUtils.h" />
     <ClInclude Include="src\Window.h" />
   </ItemGroup>
   <ItemGroup>
