@@ -37,25 +37,19 @@ namespace displayMode
     {
         // imgui matrix controls
         ImGui::Begin("Matrix Transformation");
-        ImGui::Text("Matrix entries");
-        ImGui::SliderFloat3("Translate", &m_Translate.x, -10.0f, 10.0f);
+        ImGui::Text("Rotate and scale direction:");
         ImGui::SliderFloat3("Rotation Axis", &m_RotateAxis.x, -1.0f, 1.0f);
         ImGui::SliderFloat("Rotation Angle", &m_RotateAngle, 0.0f, 360.0f);
         ImGui::SliderFloat3("Scale", &m_Scale.x, -10.0f, 10.0f);
 
         ImGui::Text("Transform Matrix");
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < 3; i++)
         {
-            ImGui::Text("%f %f %f %f", m_Transform[0][i], m_Transform[1][i], m_Transform[2][i], m_Transform[3][i]); // transposed
+            ImGui::Text("%f %f %f", m_Transform[0][i], m_Transform[1][i], m_Transform[2][i]); // transposed
         }
+        ImGui::End();
 
-        CalculateMatrix();
-        UpdateTransformedVector();
-        
-
-        ImGui::Spacing();
-        ImGui::Separator();
-
+        ImGui::Begin("Vectors");
         ImGui::Text("Initial Vector");
         ImGui::SliderFloat3("Origin", &m_Vectors->at(0).m_Origin.x, -10.0f, 10.0f);
         ImGui::SliderFloat3("Direction", &m_Vectors->at(0).m_Direction.x, -10.0f, 10.0f);
@@ -63,16 +57,21 @@ namespace displayMode
         
         EditVectorBufferData(*m_VectorBuffer, *m_Vectors, 0);
         UpdateTransformedVector();
+        ImGui::Spacing();
 
+        ImGui::Text("Translate origin:");
+        ImGui::SliderFloat3("", &m_Translate.x, -10.0f, 10.0f);
         ImGui::Spacing();
 
         ImGui::Text("Transformed Vector");
-        ImGui::Text("Origin: %f %f %f", m_Vectors->at(1).m_Origin.x, m_Vectors->at(1).m_Origin.y, m_Vectors->at(1).m_Origin.z);
+        ImGui::Text("Origin:    %f %f %f", m_Vectors->at(1).m_Origin.x, m_Vectors->at(1).m_Origin.y, m_Vectors->at(1).m_Origin.z);
         ImGui::Text("Direction: %f %f %f", m_Vectors->at(1).m_Direction.x, m_Vectors->at(1).m_Direction.y, m_Vectors->at(1).m_Direction.z);
 
         ImGui::End();
 
         // redraw vectors
+        CalculateMatrix();
+        UpdateTransformedVector();
         Redraw();
     }
 
