@@ -154,6 +154,8 @@ int main()
     // openGL settings
     glEnable(GL_DEPTH_TEST);
     glLineWidth(5.0f);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     GLFWwindow* windowID = window.GetID();
 
@@ -184,7 +186,7 @@ int main()
 
     // register different modes with respective (vectors, vectorBuffer, vectorVA, vectorVB)
     displayMode::ModeVectorMultiple* multiMode = new displayMode::ModeVectorMultiple(vectorMultiple, vectorMultipleBuffer, vectorMultipleVA, vectorMultipleVB);
-    displayMode::ModeVectorTransformation* transMode = new displayMode::ModeVectorTransformation(vectorTransform, vectorTransformBuffer, vectorTransformVA, vectorTransformVB);
+    displayMode::ModeVectorTransformation* transMode = new displayMode::ModeVectorTransformation(vectorTransform, vectorTransformBuffer, vectorTransformVA, vectorTransformVB, layout);
     displayMode::ModeBrownian* brownMode = new displayMode::ModeBrownian(vectorBrown, vectorBrownBuffer, vectorBrownVA, vectorBrownVB);
     modeMenu->RegisterMode(multiMode, "Multiple Vectors");
     modeMenu->RegisterMode(transMode, "Matrix Transformation");
