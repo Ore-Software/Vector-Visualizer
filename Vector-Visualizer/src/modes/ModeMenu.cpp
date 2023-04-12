@@ -22,5 +22,14 @@ namespace displayMode
 			if (ImGui::Button(mode.first.c_str()))
 				m_CurrentMode = mode.second;
 		}
+
+		ImGui::Begin("Guide");
+		ImGui::Text("Move around:");
+		ImGui::Text("Use \"W\", \"S\", \"A\", \"D\", \"Shift\", \"Space\"");
+		ImGui::Spacing;
+		ImGui::Text("Look around:");
+		ImGui::Text("Use \"Up\", \"Down\", \"Left\", \"Right\"");
+		ImGui::Text("Click and Drag with mouse");
+		ImGui::End();
 	}
 }
