@@ -22,8 +22,12 @@ namespace displayMode
 
 	private:
 		int m_Steps;
+		int m_CurrentStep;
+		bool m_Drawing;
 		glm::vec3 m_LastPos;
 		glm::vec3 m_RandDir;
+		double m_LastTime;
+		float m_Delay;
 	};
 
 }
