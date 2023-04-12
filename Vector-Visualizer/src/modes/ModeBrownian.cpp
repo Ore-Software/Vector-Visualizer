@@ -62,7 +62,7 @@ namespace displayMode
             m_LastTime = glfwGetTime();
             m_CurrentStep++;
         }
-        else if (m_CurrentStep >= m_Steps)
+        else if (m_CurrentStep == m_Steps)
         {
             m_Drawing = false;
             m_CurrentStep = 1;
