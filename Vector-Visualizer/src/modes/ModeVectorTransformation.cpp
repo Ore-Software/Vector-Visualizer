@@ -94,6 +94,9 @@ namespace displayMode
         {
             ImGui::Text("%f %f %f", m_Transform[0][i], m_Transform[1][i], m_Transform[2][i]); // transposed
         }
+
+        ImGui::Spacing();
+
         if (ImGui::Button("Show/Hide Matrix"))
             m_ShowParallelepiped = !m_ShowParallelepiped;
         
