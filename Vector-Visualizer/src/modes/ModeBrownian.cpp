@@ -48,6 +48,10 @@ namespace displayMode
             // clear scene
             m_Vectors->clear();
             m_VectorBuffer->clear();
+            
+            m_Drawing = false;
+            m_CurrentStep = 0;
+            m_LastTime = 0;
         }
 
         if ((m_Drawing == true) && (m_CurrentStep < m_Steps) && (glfwGetTime() - m_LastTime > m_Delay))
@@ -65,7 +69,7 @@ namespace displayMode
         else if (m_CurrentStep == m_Steps)
         {
             m_Drawing = false;
-            m_CurrentStep = 1;
+            m_CurrentStep = 0;
             m_LastTime = 0;
         }
 
