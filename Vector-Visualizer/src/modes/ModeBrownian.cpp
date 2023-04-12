@@ -4,7 +4,7 @@
 namespace displayMode
 {
     ModeBrownian::ModeBrownian(std::shared_ptr<std::vector<VectorObject>> vectors, std::shared_ptr<std::vector<float>> vectorBuffer, std::shared_ptr<VertexArray> vectorVA, std::shared_ptr<VertexBuffer> vectorVB)
-        : m_Steps(1), m_CurrentStep(1), m_Drawing(false), m_LastTime(0), m_Delay(0.1f)
+        : m_Steps(1), m_CurrentStep(0), m_Drawing(false), m_LastTime(0), m_Delay(0.1f)
     {
         m_Vectors = vectors;
         m_VectorBuffer = vectorBuffer;
@@ -37,7 +37,7 @@ namespace displayMode
         {
             m_Drawing = true;
             m_LastTime = 0;
-            m_CurrentStep = 1;
+            m_CurrentStep = 0;
             if (m_Vectors->empty())
                 m_LastPos = { 0, 0, 0 };
             else
@@ -50,7 +50,7 @@ namespace displayMode
             m_VectorBuffer->clear();
         }
 
-        if ((m_Drawing == true) && (m_CurrentStep <= m_Steps) && (glfwGetTime() - m_LastTime > m_Delay))
+        if ((m_Drawing == true) && (m_CurrentStep < m_Steps) && (glfwGetTime() - m_LastTime > m_Delay))
         {
             m_RandDir = glm::ballRand(1.0f);
             VectorObject newVec(m_LastPos, m_RandDir, glm::vec4(glm::abs(glm::ballRand(1.0f)), 1.0f)); // uses random vector direction and random color
@@ -62,7 +62,7 @@ namespace displayMode
             m_LastTime = glfwGetTime();
             m_CurrentStep++;
         }
-        else if (m_CurrentStep > m_Steps)
+        else if (m_CurrentStep >= m_Steps)
         {
             m_Drawing = false;
             m_CurrentStep = 1;
