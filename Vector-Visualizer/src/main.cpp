@@ -8,6 +8,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <chrono>
 
 #include "Window.h"
 #include "VectorObject.h"
@@ -24,6 +25,13 @@
 
 int main()
 {
+    // set rng seed using current time
+    auto time = std::chrono::system_clock::now();
+    auto since_epoch = time.time_since_epoch();
+    auto seed = std::chrono::duration_cast<std::chrono::milliseconds>(since_epoch);
+    std::srand(seed.count());
+
+
     float screenWidth = 1280.0f;
     float screenHeight = 720.0f;
     float aspectRatio = screenWidth / screenHeight;
