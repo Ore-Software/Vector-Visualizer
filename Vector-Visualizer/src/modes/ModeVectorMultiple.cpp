@@ -33,13 +33,8 @@ namespace displayMode
             ImGui::SliderFloat3("Origin", &(*m_Vectors)[j].m_Origin.x, -10.0f, 10.0f);
             ImGui::SliderFloat3("Direction", &(*m_Vectors)[j].m_Direction.x, -10.0f, 10.0f); // since origin is (0,0,0), endpoint is direction
             ImGui::ColorEdit4("Color", &(*m_Vectors)[j].m_Color.x);
-            if (ImGui::Button("Apply Changes"))
-            {
-                EditVectorBufferData(*m_VectorBuffer, *m_Vectors, j);
-
-                // redraw vectors
-                Redraw();
-            };
+            
+            EditVectorBufferData(*m_VectorBuffer, *m_Vectors, j);    
 
             if (ImGui::Button("Remove vector"))
             {
@@ -51,9 +46,6 @@ namespace displayMode
                 {
                     AddVectorBufferData(*m_VectorBuffer, vec);
                 }
-
-                // redraw vectors
-                Redraw();
             }
 
             ImGui::Spacing();
@@ -65,11 +57,12 @@ namespace displayMode
             VectorObject newVec(glm::vec3(0.0f, 0.0f, 0.0f), glm::ballRand(5.0f), glm::vec4(glm::abs(glm::ballRand(1.0f)), 1.0f)); // uses random vector direction and random color
             m_Vectors->push_back(newVec);
             AddVectorBufferData(*m_VectorBuffer, newVec);
-
-            // redraw vectors
-            Redraw();
         }
+
         ImGui::End();
+
+        // redraw vectors
+        Redraw();
     }
 
 }

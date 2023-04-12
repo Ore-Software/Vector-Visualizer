@@ -46,9 +46,6 @@ namespace displayMode
                 AddVectorBufferData(*m_VectorBuffer, newVec);
                 
                 m_LastPos += m_RandDir; // update lastPos for next iteration
-
-                // redraw vectors
-                Redraw();
             }
         }
         if (ImGui::Button("Clear scene"))
@@ -56,11 +53,11 @@ namespace displayMode
             // clear scene
             m_Vectors->clear();
             m_VectorBuffer->clear();
-
-            // redraw vectors
-            Redraw();
         }
         ImGui::End();
+
+        // redraw vectors
+        Redraw();
     }
 
 }

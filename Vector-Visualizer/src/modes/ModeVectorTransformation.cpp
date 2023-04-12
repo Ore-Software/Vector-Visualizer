@@ -49,11 +49,9 @@ namespace displayMode
             ImGui::Text("%f %f %f %f", m_Transform[0][i], m_Transform[1][i], m_Transform[2][i], m_Transform[3][i]); // transposed
         }
 
-        if (ImGui::Button("Update Matrix"))
-        {
-            CalculateMatrix();
-            UpdateTransformedVector();
-        }
+        CalculateMatrix();
+        UpdateTransformedVector();
+        
 
         ImGui::Spacing();
         ImGui::Separator();
@@ -62,14 +60,9 @@ namespace displayMode
         ImGui::SliderFloat3("Origin", &m_Vectors->at(0).m_Origin.x, -10.0f, 10.0f);
         ImGui::SliderFloat3("Direction", &m_Vectors->at(0).m_Direction.x, -10.0f, 10.0f);
         ImGui::ColorEdit4("Color", &m_Vectors->at(0).m_Color.x);
-        if (ImGui::Button("Update Initial Vector"))
-        {
-            EditVectorBufferData(*m_VectorBuffer, *m_Vectors, 0);
-            UpdateTransformedVector();
-
-            // redraw vectors
-            Redraw();
-        };
+        
+        EditVectorBufferData(*m_VectorBuffer, *m_Vectors, 0);
+        UpdateTransformedVector();
 
         ImGui::Spacing();
 
@@ -78,6 +71,9 @@ namespace displayMode
         ImGui::Text("Direction: %f %f %f", m_Vectors->at(1).m_Direction.x, m_Vectors->at(1).m_Direction.y, m_Vectors->at(1).m_Direction.z);
 
         ImGui::End();
+
+        // redraw vectors
+        Redraw();
     }
 
     void ModeVectorTransformation::CalculateMatrix()
@@ -85,7 +81,6 @@ namespace displayMode
         glm::mat4 transform = glm::mat4(1.0f);
         transform = glm::scale(transform, m_Scale);
         transform = glm::rotate(transform, glm::radians(m_RotateAngle), m_RotateAxis);
-        transform = glm::translate(transform, m_Translate);
 
         m_Transform = transform;
     }
@@ -93,14 +88,11 @@ namespace displayMode
     void ModeVectorTransformation::UpdateTransformedVector()
     {
         VectorObject transformedVector;
-        transformedVector.m_Origin = glm::vec4(m_Vectors->at(0).m_Origin, 1.0f);
+        transformedVector.m_Origin = glm::vec4(m_Vectors->at(0).m_Origin + m_Translate, 1.0f);
         transformedVector.m_Direction = m_Transform * glm::vec4(m_Vectors->at(0).m_Direction, 1.0f);
 
         m_Vectors->at(1) = transformedVector;
         EditVectorBufferData(*m_VectorBuffer, *m_Vectors, 1);
-
-        // redraw vectors
-        Redraw();
     }
 
 }
