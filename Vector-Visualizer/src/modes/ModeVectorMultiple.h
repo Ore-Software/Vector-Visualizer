@@ -2,11 +2,11 @@
 
 #include "Mode.h"
 
-#include "glad/glad.h"
+#include <glad/gl.h>
 
-#include "../external/glm/glm.hpp"
-#include "../external/glm/gtc/matrix_transform.hpp"
-#include "../external/glm/gtc/random.hpp"
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/random.hpp>
 
 namespace displayMode 
 {

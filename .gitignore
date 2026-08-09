@@ -211,3 +211,6 @@ MigrationBackup/
 *.exe
 *.out
 *.app
+
+# CMake
+build/

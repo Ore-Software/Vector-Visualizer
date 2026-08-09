@@ -1,7 +1,7 @@
 #include "VertexBuffer.h"
 
 #include <iostream>
-#include "glad/glad.h"
+#include <glad/gl.h>
 
 VertexBuffer::VertexBuffer(const void *data, unsigned int size, MODE mode)
 {

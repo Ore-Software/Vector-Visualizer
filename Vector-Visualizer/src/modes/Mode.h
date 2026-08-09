@@ -4,8 +4,9 @@
 #include <vector>
 #include <string>
 #include <functional>
+#include <memory>
 
-#include "../external/imgui/imgui.h"
+#include <imgui.h>
 
 #include "../VectorObject.h"
 #include "../BufferUtils.h"

@@ -12,3 +12,14 @@ This software is a tool for visualizing vectors and matrix transformations
 ### Brownian Motion
 ![Sample Brownian motion with 500 steps](gallery/brownian-motion.png)
 > Sample Brownian motion with 500 steps
+
+## Build
+
+Ensure that python and jinja 2 are installed as GLAD requires them.
+Create the solution file by running:
+
+```{cmd}
+mkdir build
+cd build
+cmake ..
+```

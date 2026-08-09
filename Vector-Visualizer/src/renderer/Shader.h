@@ -2,8 +2,8 @@
 
 #include <string>
 
-#include "glad/glad.h"
-#include "../external/glm/glm.hpp"
+#include <glad/gl.h>
+#include <glm/glm.hpp>
 
 class Shader
 {
